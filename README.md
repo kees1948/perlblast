@@ -29,16 +29,16 @@ lsusb -v gave me: Bus 001 Device 019: ID 0711:0302 Magic Control Technology Corp
 After editing drivers/usb/misc/uss720.c in my Linxu source tree and adding the values to the table near to the end
 of the uss720.c file.
 
-/* table of cables that work through this driver */
-static const struct usb_device_id uss720_table[] = {
-        { USB_DEVICE(0x047e, 0x1001) },
-        { USB_DEVICE(0x0557, 0x2001) },
-        { USB_DEVICE(0x0729, 0x1284) },
-        { USB_DEVICE(0x1293, 0x0002) },
-        { USB_DEVICE(0x050d, 0x0002) },
-        { USB_DEVICE(0x0711, 0x0302) },                 /* lucent chip */   <<<  I added this one 
-        { }                                             /* Terminating entry */
-};
+- /* table of cables that work through this driver */
+- static const struct usb_device_id uss720_table[] = {
+-         { USB_DEVICE(0x047e, 0x1001) },
+-         { USB_DEVICE(0x0557, 0x2001) },
+-         { USB_DEVICE(0x0729, 0x1284) },
+-         { USB_DEVICE(0x1293, 0x0002) },
+-         { USB_DEVICE(0x050d, 0x0002) },
+-         { USB_DEVICE(0x0711, 0x0302) },                 /* lucent chip */   <<<  I added this one 
+-        { }                                             /* Terminating entry */
+- };
 
 Now after: make modules and make modules_install, rmmod uss720 and modprobe uss720, and re-inserting
 te usb<->lpt dongle, it worked. I found that after use, the reference count stays at '1', so rmmod would not remove
