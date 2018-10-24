@@ -15,3 +15,8 @@ Known issues's:
 
 
 The fuse checksum is generated and checked correctly.
+
+For use on Windows: install StrawBerry Perl.
+with cpan: install Tk and install Time::HiRes
+
+The 'parport' access method works without any problem on Windows XP. You need to have an LPT port on your system of course.
