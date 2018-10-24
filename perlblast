@@ -1,5 +1,4 @@
-#!/usr/bin/perl 
-#-w
+#!/usr/bin/perl -w
 
     use Tk;
 	use Tk::Listbox;
@@ -10,17 +9,17 @@
     use POSIX qw( strftime );
 	use enum qw(UNKNOWN GAL16V8 GAL18V10 GAL20V8 GAL20RA10  GAL20XV10 GAL22V10 GAL26CV12 GAL6001 GAL6002 ATF16V8B ATF22V10B ATF22V10C);
 	use enum qw(FALSE TRUE); # boolean
-	use enum qw(NONE READGAL READPES VERIFYGAL SCLKTEST WRITEGAL ERASEGAL ERASEALL BURNSECURITY CHECKPES WRITEPES VPPTEST TESTGAL); # actions
+	use enum qw(NONE READGAL READPES VERIFYGAL SCLKTEST WRITEGAL ERASEGAL ERASEALL CHECKBURNSEC BURNSECURITY CHECKPES WRITEPES VPPTEST TESTGAL); # actions
 	use enum qw(ISNONE MSG_OK MSG_ALERT MSG_WARNING MSG_ASSURE);  # msg types
 	use enum qw(OFF ON); # signals, levels
 
 	use Device::ParallelPort;
-	use Time::HiRes qw( usleep ualarm gettimeofday tv_interval nanosleep clock_gettime clock_getres clock_nanosleep clock stat lstat ); 
+	use Time::HiRes qw( usleep ); 
 #####################################################################################################################
 # 
 # perlblast, a GAL programming utility written in Perl. By C.Schoenmakers Copyright (C) 2018
 #
-# This version uses (/dev/)parport? access to the programming hardware, thsi way you _can_ use even
+# This version uses (/dev/)parport? access to the programming hardware, this way you _can_ use even
 # usb<->parallel dongles but that may require some edit of drivers/usb/misc/uss720.c in your Linux source tree to
 # add the usb id (mmmm:dddd) to the table near the bottom of the uss720.c file, like
 # Bus 001 Device 033: ID 0711:0302 Magic Control Technology Corp. Parallel Port
@@ -61,7 +60,7 @@
 $geometry = "600x800";
 my %options=();
 
-$ThisVersion = "Rev: 0.4 2018-10-22 C.S.";
+$ThisVersion = "Rev: 0.4.1 2018-10-22 C.S.";
 
 # parport control bits
 $STROBE =  1;	# 1, invert
@@ -212,13 +211,16 @@ my $progtime = 0;
 my $read12v = 48;     # 12V
 my $galvcc = 5.0;
 
+my $galtype;
+my $galname;
+
 # hardware register copies
 my $ls273shadow = 0;
 my $dacvalueshadow = 0;
 
 my $portname = "";
 my $portid = 'auto:0';
-my $portopen = -1;
+my $parport = -1;
 
 #================================================================================================
 #
@@ -233,7 +235,7 @@ my $mw = MainWindow->new(-title => "PerlBlast", -relief => 'raised', -borderwidt
 	$mw->configure(-menu => my $menubar = $mw->Menu);
 	my $file = $menubar->cascade(-label => '~File');
 	my $galm = $menubar->cascade(-label => '~GAL');
-	my $typm = $menubar->cascade(-label => '~Type');
+#	my $typm = $menubar->cascade(-label => '~Type');
 	my $help = $menubar->cascade(-label => '~Help');
 #
 	$file->command(
@@ -293,12 +295,12 @@ my $mw = MainWindow->new(-title => "PerlBlast", -relief => 'raised', -borderwidt
 # create a drop down menu
 	my $opt = $tp->Optionmenu(
 		-options => [
-				[UNKNOWN => 0], [GAL16V8=>1], [GAL18V10=>2], [GAL20V8=>3], [GAL20RA10=>4],[GAL20XV10=>5],[GAL22V10=>6],
-				[GAL26CV12=>7],[GAL6001=>8],[GAL6002=>9],[ATF16V8B=>10],[ATF22V10B=>11],[ATF22V10C=>12] 
+				[UNKNOWN => 0], [GAL16V8 => 1], [GAL18V10 => 2], [GAL20V8 => 3], [GAL20RA10 => 4],[GAL20XV10 => 5],[GAL22V10 => 6],
+				[GAL26CV12 => 7],[GAL6001 => 8],[GAL6002 => 9],[ATF16V8B => 10],[ATF22V10B => 11],[ATF22V10C => 12] 
 					],
 		-command => sub {  \&SetGalParms(shift) },
-		-variable => \$galtype,
-		-textvariable => \$galname,
+		-variable => $galtype,
+		-textvariable => $galname,
 		-width => 10,
 	)->place(-x => 210, -y => 0);
 #
@@ -356,6 +358,19 @@ my $mw = MainWindow->new(-title => "PerlBlast", -relief => 'raised', -borderwidt
 		-command => \&EraseAll,
 	)->place(-x => 330, -y => 60);
 #
+	$lp = $tp->Button (
+		-text => "Load PES",
+		-width => 10,
+		-command => \&LoadPes,
+	)->place(-x => 440, -y => 0);
+#
+	$lp = $tp->Button (
+		-text => "Save PES",
+		-width => 10,
+		-command => \&SavePes,
+	)->place(-x => 440, -y => 30);
+#
+#
 # listbox for jedec file data
 #
 	$blg = $mw->Scrolled ('Listbox',
@@ -385,12 +400,9 @@ my $mw = MainWindow->new(-title => "PerlBlast", -relief => 'raised', -borderwidt
 	
 	&InitAll;					# put interface and variables in decent state
 
-	if (-c "/dev/".$portname)
+	if ($portname ne "")
 	{
-		if ($portname ne "")
-		{
-			($portopen = $parport = Device::ParallelPort->new($portid)) || die "Can't open the choosen port $portname!\n";
-		}
+		($parport = Device::ParallelPort->new($portid)) || die "Can't open the choosen port $portname!\n";
 	}
 	else
 	{
@@ -523,6 +535,26 @@ sub SaveJedec
 
 #################################################################################################
 #
+# Load PES from file
+#
+#################################################################################################
+sub LoadPes
+{
+	&LoadPESFile;
+}
+
+#################################################################################################
+#
+# Save PES to file
+#
+#################################################################################################
+sub SavePes
+{
+	&SavePESFile;
+}
+
+#################################################################################################
+#
 # Read GAL info from DUT
 #
 #################################################################################################
@@ -610,7 +642,16 @@ sub WritePes
 sub BurnSecurity
 {
 
+	if(! &TestProperGAL)
+	{
+		return TRUE;
+	}
 
+	if (&DialogHandler(MSG_WARNING, "Programming the security fuse will prohibit the readout and verification of the GAL. Do you want to continue ?" ,CHECKBURNSEC) != TRUE)
+	{
+		return TRUE;
+	}
+	&BurnSECURITY;
 }
 
 #################################################################################################
@@ -1901,15 +1942,12 @@ sub EraseGAL
 {
     if (&TurnOn(ERASEGAL))
 	{
-	    &Delay(2);
     	&SetRow($galeraserow);
-    	&Delay(2);
     	if (($galtype ==  GAL16V8) || ($galtype == ATF16V8B) || ($galtype == GAL20V8))
     	{
         	&SendBit(1);
     	}
     	&Strobe($erasetime);
-    	&Delay(2);
     	&TurnOff;
 	}
 }
@@ -1923,17 +1961,68 @@ sub EraseALL
 {
     if (&TurnOn(ERASEALL))
 	{
-    	&Delay(2);
     	&SetRow($galeraseallrow);
-    	&Delay(2);
     	if(($galtype ==  GAL16V8) || ($galtype == ATF16V8B) || ($galtype == GAL20V8))
     	{
         	&SendBit(1);
     	}
     	&Strobe($erasetime);
-    	&Delay(2);
     	&TurnOff;
 	}
+}
+
+##############################################################################################
+#
+#
+#
+##############################################################################################
+sub BurnSECURITY
+{
+	if (&TurnOn(BURNSECURITY))
+	{
+		if (($galtype == GAL16V8) || ($galtype == GAL20V8) || ($galtype == ATF16V8B))
+		{
+			&SetRow(61);
+			&SendBit(1);
+		}
+		elsif (($galtype == GAL6001) || ($galtype == GAL6002))
+		{
+			&SetRow(0);
+			&SendBits(20 + 11 + 64, 0);
+			&SendBit(1);
+			&SendAddress(7, 98);
+			&SendBits(16, 0);
+			&SetSDIN(0);
+		}
+		else
+		{
+			&SetRow(0);
+			if ($galtype == GAL18V10)
+			{
+				&SendBits(96, 0);
+			}
+			elsif ($galtype == GAL20RA10)
+			{
+				&SendBits(80, 0);
+			}
+			elsif ($galtype == GAL20XV10)
+			{
+				&SendBits(40, 0);
+			}
+			elsif (($galtype == GAL22V10) || ($galtype == ATF22V10B) || ($galtype == ATF22V10C))
+			{
+				&SendBits(132, 0);
+			}
+			elsif ($galtype == GAL26CV12)
+			{
+				&SendBits(122, 0);
+			}
+			&SendAddress(6, 61);
+			&SetSDIN(0);
+		}
+		&Strobe($progtime);
+		&TurnOff;
+	}	
 }
 
 ##############################################################################################
@@ -2161,6 +2250,38 @@ sub SaveFile
 	&ProcessSaveFile($file) if defined $file;
 }
 
+########################################################################################################
+#
+# load PES from file
+#
+########################################################################################################
+sub LoadPESFile
+{
+	my $types = [
+	  ['PES Files',       ['.pes', '.PES']],
+	  ['All Files',        '*',             ],
+	];
+
+	my $file = $mw->getOpenFile(-filetypes => $types, -defaultextension => ".PES" );
+	&ProcessLoadPESFile($file) if defined $file;
+}
+
+########################################################################################################
+#
+# load PES from file
+#
+########################################################################################################
+sub SavePESFile
+{
+	my $types = [
+	  ['PES Files',       ['.pes', '.PES']],
+	  ['All Files',        '*',             ],
+	];
+
+	my $file = $mw->getSaveFile(-filetypes => $types, -defaultextension => ".PES" );
+	&ProcessSavePESFile($file) if defined $file;
+}
+
 #################################################################################################
 #
 # Load a JEDEC file
@@ -2274,6 +2395,72 @@ sub ProcessSaveFile
 #
 #
 #################################################################################################
+sub ProcessLoadPESFile
+{
+	my $filename = $_[0];
+	my $line;
+	my $fh;
+	my $i;
+
+	if (!open($fh, "<", $filename))
+	{
+		&DialogHandler(MSG_ALERT, "Can't open file: $filename", 0); 
+		return;
+	}
+	$line = <$fh>;
+	close $fh;
+
+	$line =~ s/[\r\n]//g;	# remove EOL chars
+	if (length $line != 16)			# 8 HEX character sets
+	{
+		&DialogHandler(MSG_ALERT,"PES File has not correct size!", 0);
+		return;
+	}
+	if (&CheckHexEntry(split(/|/,$line)))
+	{
+		for ($i =0; $i <8; $i++)
+		{
+			@pes[$i] =  hex( substr($line,$i*2, 2));
+		}
+	}
+	else
+	{
+		&DialogHandler(MSG_ALERT,"PES File has non HEX characters!", 0);
+		return;
+	}
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub ProcessSavePESFile
+{
+	my $filename = $_[0];
+	my $fh;
+	my $i;
+
+    if (!open($fh, ">", $filename))
+    {   
+        &DialogHandler(MSG_ALERT, "Can't open file: $filename", 0);
+        return;
+    }
+
+	for ($i = 0; $i < 8 ; $i++)
+	{
+		printf $fh "%02X", @pes[$i];
+	}
+	printf $fh "\n";
+
+	close $fh;
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
 # turn on DUT
 sub TurnOn
 {
@@ -2348,14 +2535,14 @@ sub SetPV
 # Dialogs and other User interaction
 #
 # message types MSG_OK MSG_ALERT MSG_WARNING MSG_ASSURE
-# mode types READGAL READPES VERIFYGAL SCLKTEST WRITEGAL ERASEGAL ERASEALL BURNSECURITY WRITEPES VPPTEST TESTGAL
+# mode types READGAL READPES VERIFYGAL SCLKTEST WRITEGAL ERASEGAL ERASEALL CHECKBURNSEC BURNSECURITY WRITEPES VPPTEST TESTGAL
 #================================================================================================
 sub DialogHandler
 {
 	my $msgfunc = $_[0];
 	my $title = $_[1];
 	my $mode = $_[2];
-	my $testval = 2;
+	my $testval = -1;
 	my $textrow1;
 	my $textrow2;
 	my $textrow3;
@@ -2419,7 +2606,7 @@ sub DialogHandler
 			}
 		}	
 
-		if (($mode == WRITEPES) || ($mode == WRITEGAL) || ($mode == ERASEGAL) || ($mode == ERASEALL))
+		if (($mode == WRITEPES) || ($mode == WRITEGAL) || ($mode == ERASEGAL) || ($mode == ERASEALL) || ($mode == BURNSECURITY))
 		{
 			$dle1 = $dw->LabEntry(
 					-textvariable => \$vppf,
@@ -2486,11 +2673,11 @@ sub DialogHandler
 #-----------------------------------------------------------------------------------------------------
 	elsif ($msgfunc == MSG_WARNING)
 	{
-		$dw->geometry('500x50');
+		$dw->geometry('700x50');
 		$textrow1 = $title;
 		$dwl1->configure(-text => $textrow1);
 
-		if ($mode == TESTGAL)
+		if (($mode == TESTGAL) || ($mode == CHECKBURNSEC))
 		{
 			$lbuttontext = "Yes";
 			$rbuttontext = "No";
@@ -2501,7 +2688,7 @@ sub DialogHandler
 #
 # initial contents
 #
-	if (($mode == CHECKPES) || ($mode == WRITEPES) || ($mode == WRITEGAL) ||($mode == ERASEGAL) || ($mode == ERASEALL))
+	if (($mode == CHECKPES) || ($mode == WRITEPES) || ($mode == WRITEGAL) ||($mode == ERASEGAL) || ($mode == ERASEALL) || ($mode == BURNSECURITY))
 	{
 		if (hex($lpes[3]) == $LATTICE)
 		{
@@ -2528,7 +2715,7 @@ sub DialogHandler
 		$textrow3 = sprintf "VPP=%2.2f Prog-Pulse=%dmS Erase-Pulse=%dmS", $vpp/4.0, $progtime, $erasetime;	
 		$dwl3->configure(-text => $textrow3);
 	}
-	elsif (($mode == WRITEPES) || ($mode == WRITEGAL) || ($mode == ERASEGAL) || ($mode == ERASEALL))
+	elsif (($mode == WRITEPES) || ($mode == WRITEGAL) || ($mode == ERASEGAL) || ($mode == ERASEALL) || ($mode == BURNSECURITY))
 	{
       	$textrow1 = sprintf "%s %s %s", ($pes[1] & 0x10)?"3.3V":"5.0V", $temptext, @{$galinfo{$galtype}}[3];
       	$dwl1->configure(-text => $textrow1);
@@ -2538,7 +2725,7 @@ sub DialogHandler
 		$dwl3->configure(-text => $textrow3);
 		$vppf = sprintf "%2.2f", $vpp / 4.0;
 		$dle1->configure(-text => $vppf);
-		if (($mode == WRITEPES) || ($mode == WRITEGAL))
+		if (($mode == WRITEPES) || ($mode == WRITEGAL) || ($mode == BURNSECURITY))
 		{
 			$progf = sprintf "%3d", $progtime;
 		}
@@ -2580,7 +2767,10 @@ sub DialogHandler
 #
 	&KeysOff;
 
-	while(1){
+#
+# wait until use presses button
+#
+	while($testval < 0){
 		$mw->update;
 
 		if (hex($lpes[3]) == $LATTICE)
@@ -2599,16 +2789,9 @@ sub DialogHandler
 		{
 			$temptext = "Unknown";
 		}
-#
-# generic exit and delay
-#
-		if($testval != 2)
-		{
-			goto OUT;
-		}
 		usleep(10000);
 	}
-OUT:
+
 	if ($testval == 1)
 	{
 		if ($mode == CHECKPES)
@@ -2677,7 +2860,7 @@ sub SetVPP
 	my $setting = $_[0];			# parameter that represents the desired voltage
 	my $portdata;
 
-	if ($portopen != -1)
+	if ($parport != -1)
 	{
 # for the CSGBLAST hardware uncomment the following lines
 #		$portdata = ord $parport->get_data();		# save present state
@@ -2780,7 +2963,7 @@ sub HardwareInit
 #################################################################################################
 sub SetSDIN
 {
-	if ($portopen != -1)
+	if ($parport != -1)
 	{
 		if ($_[0] == ON)
 		{
@@ -2801,7 +2984,7 @@ sub SetSDIN
 #################################################################################################
 sub SetSCLK
 {
-	if ($portopen != -1)
+	if ($parport != -1)
 	{
 		if ($_[0] == ON)
 		{
@@ -2822,7 +3005,7 @@ sub SetSCLK
 #################################################################################################
 sub SetRow
 {
-	if ($portopen != -1)
+	if ($parport != -1)
 	{
 	    my $control = ord $parport->get_data();
 	
@@ -2846,7 +3029,7 @@ sub SetRow
 #################################################################################################
 sub SetSTROBE
 {
-	if ($portopen != -1)
+	if ($parport != -1)
 	{
 		my $control = ord $parport->get_control() & ~$STROBE;
 
@@ -2866,7 +3049,7 @@ sub SetSTROBE
 #################################################################################################
 sub SetFEED
 {
-	if ($portopen != -1)
+	if ($parport != -1)
 	{
 	    my $control = ord $parport->get_control() & ~$LNFEED;
 
@@ -2886,7 +3069,7 @@ sub SetFEED
 #################################################################################################
 sub SetINIT
 {
-	if ($portopen != -1)
+	if ($parport != -1)
 	{
 	    my $control = ord $parport->get_control() & ~$INIT;
 
@@ -2906,7 +3089,7 @@ sub SetINIT
 #################################################################################################
 sub SetSEL
 {
-	if ($portopen != -1)
+	if ($parport != -1)
 	{
     	my $control = ord $parport->get_control() & ~$SELCTP;
 
@@ -2928,7 +3111,7 @@ sub SetSEL
 #################################################################################################
 sub GetACK
 {
-	if ($portopen != -1)
+	if ($parport != -1)
 	{
 		my $val = ord $parport->get_status & $ACK;			# get bit
 
@@ -2944,7 +3127,7 @@ sub GetACK
 #################################################################################################
 sub GetBUSY
 {
-	if ($portopen != -1)
+	if ($parport != -1)
 	{
 		my $val = ord  $parport->get_status & $BUSY;
 
@@ -2960,7 +3143,7 @@ sub GetBUSY
 #################################################################################################
 sub GetERROR
 {
-	if ($portopen != -1)
+	if ($parport != -1)
 	{
 		my $val = ord  $parport->get_status & $ERROR;
 
@@ -2976,7 +3159,7 @@ sub GetERROR
 #################################################################################################
 sub GetPAPOUT
 {
-	if ($portopen != -1)
+	if ($parport != -1)
 	{
 		my $val = ord  $parport->get_status & $PAPOUT;
 
@@ -2992,7 +3175,7 @@ sub GetPAPOUT
 #################################################################################################
 sub GetSELECT
 {
-	if ($portopen != -1)
+	if ($parport != -1)
 	{
 		my $val = ord  $parport->get_status & $SELECT;
 
