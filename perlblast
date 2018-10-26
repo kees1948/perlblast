@@ -520,7 +520,10 @@ sub GetSetup
 #################################################################################################
 sub OpenJedec
 {
-	&LoadFile;
+	if (&LoadFile)
+	{
+		DialogHandler(MSG_ALERT,"Filechecksum in error !!", 0);
+	}
 }
 
 #################################################################################################
@@ -1217,8 +1220,12 @@ sub FormatJEDEC
 	my $ch;
 
 	&ClrListBox;
-	&ToListBox(sprintf "JEDEC file for %s created on %s", $galname, strftime("%a %Y-%m-%d %k:%m:%S", localtime(time)));
-	&ToListBox(sprintf "*QP%d*QF%d*QV0*F0*G0*X0*", $galpins, $galfuses);
+	&ToListBox(sprintf "JEDEC file created on %s", strftime("%a %Y-%m-%d %k:%m:%S", localtime(time)));
+	&ToListBox(sprintf "%c", 0x02);
+	&ToListBox(sprintf "%s", $galname);
+	&ToListBox(sprintf "*QP%d*", $galpins);
+	&ToListBox(sprintf "QF%d*",  $galfuses);
+	&ToListBox(sprintf "QV0*F0*G0*X0*", $galpins, $galfuses);
 
 	if (($galtype == GAL6001) || ($galtype == GAL6002))
 	{
@@ -1317,6 +1324,7 @@ sub FormatJEDEC
 		$buffer .= "*";
 		&ToListBox ($buffer);
 		&ToListBox ( sprintf "C%04X*", &CheckSum(\@fuses, $galfuses));
+		&ToListBox ( sprintf "%c", 0x03);
 	}
 }
 
@@ -2231,7 +2239,14 @@ sub LoadFile
 	];
 
 	my $file = $mw->getOpenFile(-filetypes => $types, -defaultextension => ".JED" );
-	&ProcessLoadFile($file) if defined $file;
+	if (defined $file)
+	{
+		return &ProcessLoadFile($file);
+	}
+	else
+	{
+		return -1;
+	} 
 }
 
 ########################################################################################################
@@ -2279,7 +2294,7 @@ sub SavePESFile
 	];
 
 	my $file = $mw->getSaveFile(-filetypes => $types, -defaultextension => ".PES" );
-	&ProcessSavePESFile($file) if defined $file;
+	return &ProcessSavePESFile($file) if defined $file;
 }
 
 #################################################################################################
@@ -2295,6 +2310,7 @@ sub ProcessLoadFile
 	my $i;
 	my $ptr;
 	my $fcflag = 0;
+	my $loadchecksum = 0;
 	my $filechecksum = 0;
 	my $listboxline;
 
@@ -2302,7 +2318,7 @@ sub ProcessLoadFile
 	local ($/); # slurp mode
 
 	&ClrListBox;	
-	open (JEDECIN, "<", $filename) || ($db = $mw->DialogBox(-title => 'File not found!', -buttons => ['Ok'] ));	
+	open (JEDECIN, "<", $filename) || &DialogHandler(MSG_ALERT," File not found!" , 0);
 # first RAW read for FILE checksum
 	while(<JEDECIN>)
 	{
@@ -2315,7 +2331,8 @@ sub ProcessLoadFile
 			}
 			if ($fcflag == 1)
 			{
-				$filechecksum += ord $filebuf[$i];
+				$loadchecksum += ord $filebuf[$i];
+				$loadchecksum &= 0xFFFF;				# max 65535
 			}
 			if (ord $filebuf[$i] == 0x03)
 			{
@@ -2342,26 +2359,29 @@ sub ProcessLoadFile
 	$ptr = index($fusedata, chr(0x02));
 	if ($ptr < 0)
 	{
-		 $db = $mw->DialogBox(-title => 'Error in File', -buttons => ['Ok'] );
+		 &DialogHandler(MSG_ALERT,"Error in File, can't locate STX",0);
 		 return;
 	}
 	else
 	{
-		$fusedata = substr($fusedata, $ptr+1);
+		$fusedata = substr($fusedata, $ptr+1);				# cut everything before and including STX
 	}
 
 	$ptr = index($fusedata, chr(0x03));
 	if ($ptr < 0)
 	{
-		 $db = $mw->DialogBox(-title => 'Error in File', -buttons => ['Ok'] );
+		 &DialogHandler(MSG_ALERT,"Error in File, can't locate ETX",0);
 		 return;
 	}
 	else
 	{
-		$fusedata = substr($fusedata, 0, $ptr);
+		$filechecksum = substr($fusedata, $ptr + 1, 4);			# grab file checksum here
+		$fusedata = substr($fusedata, 0, $ptr);				# drop everything after and including ETX
 	}
 	@ffuses = split(/|/, $fusedata);	
 	&CheckJEDEC ($fusedata);
+	# accept files where filechecksum has been declared 0000
+	return (hex($filechecksum) == 0) ? 0 : hex($filechecksum)-$loadchecksum;		 
 }
 
 #################################################################################################
@@ -2373,14 +2393,47 @@ sub ProcessSaveFile
 {
 	my $filename = $_[0];
 	my @elements = $blg->get(0, 'end');
+	my $filechecksum = 0;
+	my $checksumon = 0;
+	my $characters;
+	my $i;
 
 	if ($#elements != -1)
 	{
-		open (JEDECOUT, ">", $filename) || ($db = $mw->DialogBox(-title => 'Could not open outputfile!', -buttons => ['Ok'] ));	
+		open (JEDECOUT, ">", $filename) || &DialogHandler(MSG_ALERT, "Could not open outputfile!", 0); 
 
 		foreach $line (@elements)
 		{
-			printf JEDECOUT "%s\n",  $line;
+			@characters = split (/|/, $line);
+			for ($i = 0; $i < $#characters + 1; $i++)
+			{
+				if (($checksumon == 0) && (ord $characters[$i] == 2 ))  # STX
+				{
+					$checksumon = 1;
+				}	
+				elsif (($checksumon == 1) && (ord $characters[$i] == 3)) #ETX
+				{
+					$checksumon = 2;
+				}	
+				printf JEDECOUT "%s", $characters[$i];
+				if ($checksumon != 0)
+				{
+					$filechecksum += ord $characters[$i];
+				}
+				elsif ($checksumon == 2)
+				{
+					$checksumon = 0;
+					printf JEDECOUT "%04X", $filechecksum;
+					$i += 4;										# skip over possible existing checksum from prev load
+				}
+				$filechecksum &= 0xffff;
+			}
+			printf JEDECOUT "\r\n";		
+			if ($checksumon == 1)
+			{
+				$filechecksum += ord "\r";
+				$filechecksum += ord "\n";
+			}
 		}	
 		close JEDECOUT;
 	}
@@ -2449,7 +2502,7 @@ sub ProcessSavePESFile
 
 	for ($i = 0; $i < 8 ; $i++)
 	{
-		printf $fh "%02X", @pes[$i];
+		printf $fh "%02X", $pes[$i];
 	}
 	printf $fh "\n";
 
@@ -2551,7 +2604,7 @@ sub DialogHandler
 	my $lbuttontext = "OK";
 	my $rbuttontext = "Cancel";
 	my $i;
-	my @lpes; 
+	my @lpes = (0,0,0,0,0,0,0,0);
 
 #print "msgfunc: $msgfunc mode: $mode\n";
 # fixed size and default buttons
