@@ -87,25 +87,25 @@ $SGSTHOMSON = 0x20;
 # GAL information
 #
 ###################################################################################################################
-# type,id0|id1,name,fuses,pins,rows,bits,uesrow,uesfuse,uesbytes,eraserow,eraseallrow,pesrow,pesbytes,cfgrow,config,vpp,progtime,erasetime
-# |     |   |    |   |     |    |    |     |      |        |        |          |        |      |        |      |      |    |        |
-# |     |   |    |   |     |    |    |     |      |        |        |          |        |      |        |      |      |    |        |
-# |     |   |    |   |     |    |    |     |      |        |        |          |        |      |        |      |      |    |        |
-# |     |   |    |   |     |    |    |     |      |        |        |          |        |      +---+    |      |      |    |        |
-# |     |   |    |   |     |    |    |     |      |        |        |          |        +------+   |    |      |      |    |        |
-# |     |   |    |   |     |    |    |     |      |        |        |          +-----------+   |   |    |      |      |    |        |
-# |     |   |    |   |     |    |    |     |      |        |        +------------------+   |   |   |    |      |      |    |        |
-# |     |   |    |   |     |    |    |     |      |        +-----------------------+   |   |   |   |   ++      |     ++    |        |
-# |     |   |    |   |     |    |    |     |      *---------------------------+    |   |   |   |   |   |       |     |     |        |
-# |     |   |    |   |     |    |    |     +-----------------------------+    |    |   |   |   |   |   |       |     |     |    +---+ 
-# |     |   |    |   |     |    |    +-------------------------------+   |    |    |   |   |   |   |   |       |     |     |    |
-# |     |   |    |   |     |    +-------------------------------+    |   |    |    |   |   |   |   |   |       |     |     |    |
-# |     |   |    |   |     +--------------------------------+   |    |   |    |    |   |   |   |   |   |       |     |     |    |
-# |     |   |    |   +---------------------------------+    |   |    |   |    |    |   |   |   |   |   |       |     |     |    |
-# |     |   |    +--------------------------+          |    |   |    |   |    |    |   |   |   |   |   |       |     |     |    |
-# |     |   +-----------------------+       |          |    |   |    |   |    |    |   |   |   |   |   |       |     |     |    |
-# |     +---------------------+     |       |          |    |   |    |   |    |    |   |   |   |   |   |       |     |     |    |
-# +-----------------v         v     v       v          v    v   v    v   v    v    v   v   v   v   v   v       v     v     v    v
+# type,id0|id1,name,fuses,pins,rows,bits,uesrow,uesfuse,uesbytes,eraserow,eraseallrow,pesrow,pesbytes,cfgrow,config,vpp,progtime,erasetime,vcc
+# |     |   |    |   |     |    |    |     |      |        |        |          |        |      |        |      |      |    |        |       |
+# |     |   |    |   |     |    |    |     |      |        |        |          |        |      |        |      |      |    |        |       |
+# |     |   |    |   |     |    |    |     |      |        |        |          |        |      |        |      |      |    |        |       |
+# |     |   |    |   |     |    |    |     |      |        |        |          |        |      +---+    |      |      |    |        |       |
+# |     |   |    |   |     |    |    |     |      |        |        |          |        +------+   |    |      |      |    |        |       |
+# |     |   |    |   |     |    |    |     |      |        |        |          +-----------+   |   |    |      |      |    |        |       |
+# |     |   |    |   |     |    |    |     |      |        |        +------------------+   |   |   |    |      |      |    |        |       |
+# |     |   |    |   |     |    |    |     |      |        +-----------------------+   |   |   |   |   ++      |     ++    |        |       |
+# |     |   |    |   |     |    |    |     |      *---------------------------+    |   |   |   |   |   |       |     |     |        |       |
+# |     |   |    |   |     |    |    |     +-----------------------------+    |    |   |   |   |   |   |       |     |     |    +---+       |
+# |     |   |    |   |     |    |    +-------------------------------+   |    |    |   |   |   |   |   |       |     |     |    |           |
+# |     |   |    |   |     |    +-------------------------------+    |   |    |    |   |   |   |   |   |       |     |     |    |    +------+
+# |     |   |    |   |     +--------------------------------+   |    |   |    |    |   |   |   |   |   |       |     |     |    |    |
+# |     |   |    |   +---------------------------------+    |   |    |   |    |    |   |   |   |   |   |       |     |     |    |    |
+# |     |   |    +--------------------------+          |    |   |    |   |    |    |   |   |   |   |   |       |     |     |    |    |
+# |     |   +-----------------------+       |          |    |   |    |   |    |    |   |   |   |   |   |       |     |     |    |    |
+# |     +---------------------+     |       |          |    |   |    |   |    |    |   |   |   |   |   |       |     |     |    |    |
+# +-----------------v         v     v       v          v    v   v    v   v    v    v   v   v   v   v   v       v     v     v    v    v
 #
 {
 no warnings 'once';
@@ -214,7 +214,7 @@ my $vpp = 0;
 my $erasetime = 0;
 my $progtime = 0;
 my $read12v = 48;     # 12V
-my $galvcc = 5.0;
+my $galvcc = 0.0;
 
 my $galtype;
 my $galname;
@@ -434,7 +434,7 @@ sub SetGalParms
 	s{^\s+|\s+$}{}g foreach @gal_setting;
 
 	($galtype,$galid0,$galid1,$galname,$galfuses,$galpins,$galrows,$galbits,$galuesrow,$galuesfuse,$galuesbytes,$galeraserow,$galeraseallrow,
-	$galpesrow,$galpesbytes,$galcfgrow,$galconfig,$galvpp,$galprogtime,$galerasetime) = @gal_setting; # split up array
+	$galpesrow,$galpesbytes,$galcfgrow,$galconfig,$galvpp,$galprogtime,$galerasetime,$galvcc) = @gal_setting; # split up array
 }
 
 #################################################################################################
@@ -785,7 +785,7 @@ sub ReadGAL
                             &SendBits(31, 0);
                             for ($bit = 0 ; $bit < 64; $bit++)
                             {
-                                    &SendBit($bit != $row);
+                                    &SendBit(($bit != $row) ? 1 : 0);
                             }
                             &SendBits(24, 0);
                             &SetSDIN(OFF); #?
@@ -862,7 +862,8 @@ sub ReadGAL
 				}
 				&Delay(1);
 				# read CFG
-				&StrobeRow($galcfgrow);   # bug 2019-02-08
+				&SetRow($galcfgrow);
+				&Strobe(2);
                 for ($bit = 0; $bit < $#{$galconfig}+1; $bit++)
                 {
                    $rfuses[@{$galconfig}[$bit]] = &ReceiveBit;
@@ -1118,7 +1119,7 @@ sub ParsePES
 			}
 		}
 	}
-print "Fail: all prog settings reset!\n";
+	&DialogHandler(MSG_ALERT, (sprintf "PES info unknown, check it!", $pos), 0);
 	$erasetime = 0;
 	$progtime = 0;
 	$vpp = 0;
@@ -1133,6 +1134,11 @@ sub WritePES
 {
 	my $byte;
 	my $bitmask;
+	if ($galtype == UNKNOWN)
+	{
+		&DialogHandler(MSG_ALERT, (sprintf "WritePES: unknown GAL type, don't know how to write!", $pos), 0);
+		return;
+	}
 
 	if (&TurnOn(WRITEPES) == TRUE)
 	{
@@ -1144,7 +1150,7 @@ sub WritePES
 			{
 				for($bitmask = 0x01; $bitmask <= 0x80; $bitmask <<= 1)
 				{
-					&SendBit($pes[$byte] & $bitmask);
+					&SendBit(($pes[$byte] & $bitmask) ? 1 : 0);
 				}
 			}
 			&SetSDIN(OFF);
@@ -1160,7 +1166,7 @@ sub WritePES
 			{
 				for ($bitmask = 0x01; $bitmask <= 0x80; $bitmask <<= 1) # bug 2019-02-08
 				{
-					&SendBit($pes[$byte] & $bitmask);
+					&SendBit(($pes[$byte] & $bitmask) ? 1 : 0);
 				}
 			}
 			if (($galpesbytes * 8) < $galbits)
@@ -1179,7 +1185,7 @@ sub WritePES
 			{
 				for ($bitmask = 0x01; $bitmask <= 0x80; $bitmask <<= 1) # bug 2019-02-08
 				{
-					&SendBit($pes[$byte] & $bitmask);
+					&SendBit(($pes[$byte] & $bitmask) ? 1 : 0);
 				}
 			}
 			if (($galpesbytes * 8) < $galbits)
@@ -1198,7 +1204,7 @@ sub WritePES
 			{
 				for($bitmask = 0x01; $bitmask <= 0x80; $bitmask <<= 1)
 				{
-					SendBit($pes[$byte] & $bitmask);
+					SendBit(($pes[$byte] & $bitmask) ? 1 : 0);
 				}
 			}
 			&SetSDIN(OFF);
@@ -1447,7 +1453,7 @@ sub ParseFuseMap
 				}
 				if (($char eq '0') || ($char eq '1'))
 				{
-					@fuses = {};		# empty fusemap
+					@fuses = (1) x $galfuses; # empty fusemap
 				}
 				else
 				{
@@ -1715,7 +1721,7 @@ sub WriteGAL
                             &SetRow($row);
                             for ($bit = 0; $bit < $galbits; $bit++)
                             {
-                                &SendBit ($array[$galrows * $bit + $row]);
+                                &SendBit (($array[$galrows * $bit + $row]) ? 1 : 0);
                             }
                             &Strobe($progtime);
                     }
@@ -1723,7 +1729,7 @@ sub WriteGAL
                     &SetRow($galuesrow);
                     for ($bit = 0; $bit < $galuesbytes * 8; $bit++)
                     {
-                            &SendBit( $array[$galuesfuse + $bit]);
+                            &SendBit(($array[$galuesfuse + $bit]) ? 1 : 0);
                     }
                     &Strobe($progtime);
                     # write CFG
@@ -1732,20 +1738,20 @@ sub WriteGAL
                     {
                             if ($pes[2] == 0x1A)
                             {
-                                    &SendBit( $array[$cfg16V8AB[$bit]]);
+                                    &SendBit(($array[$cfg16V8AB[$bit]]) ? 1 : 0);
                             }
                             elsif ($pes[2] == 0x20)
                             {
-                                    &SendBit( $array[$cfg20V8[$bit]]);
+                                    &SendBit(($array[$cfg20V8[$bit]]) ? 1 : 0);
                             }
                             elsif ($pes[2] == 0x3A)
                             {
-                                    &SendBit( $array[$cfg20V8AB[$bit]]);
+                                    &SendBit(($array[$cfg20V8AB[$bit]]) ? 1 : 0);
                             }
                             else
                             {
                                     # pes[2] = 0 or pes[2] is invalid
-                                    &SendBit($array[$cfg16V8[$bit]]);
+                                    &SendBit(($array[$cfg16V8[$bit]]) ? 1 : 0);
                             }
                     }
                     &Strobe($progtime);
@@ -1762,7 +1768,7 @@ sub WriteGAL
                             }
                             for ($bit = 0; $bit < 64 ; $bit++)
                             {
-                                    &SendBit( $array[114 * $bit + $row]);
+                                    &SendBit(($array[114 * $bit + $row]) ? 1 : 0);
                             }
                             &SendBit(1);
                             &SendAddress(7, $row);
@@ -1774,12 +1780,12 @@ sub WriteGAL
                     {
                             for ($bit = 0; $bit < 20; $bit++)
                             {
-                                    &SendBit ($array[78 + 114 * $row + $bit]);
+                                    &SendBit (($array[78 + 114 * $row + $bit]) ? 1 : 0);
                             }
                             &DiscardBits(83);
                             for ($bit = 0; $bit < 16; $bit++)
                             {
-                                    &SendBit ($array[98 + 114 * $row + $bit]);
+                                    &SendBit (($array[98 + 114 * $row + $bit]) ? 1 : 0);
                             }
                     }
                     # write UES
@@ -1787,14 +1793,14 @@ sub WriteGAL
                     &DiscardBits(20);
                     for ($bit = 0; $bit < 72; $bit++)
                     {
-                            &SendBit ($array[$galuesbits + $bit]);
+                            &SendBit (($array[$galuesbits + $bit]) ? 1 : 0);
                     }
                     # write CFG
                     &SetRow($galcfgrow);
                     &Strobe(2);
                     for ($bit = 0; $bit < $#{$galconfig}+1; $bit++)
                     {
-                            &SendBit ($array[@{$galconfig}[$bit]]);
+                            &SendBit (($array[@{$galconfig}[$bit]]) ? 1 : 0);
                     }
             }
             elsif ($galtype == ATF16V8B)
@@ -1804,7 +1810,7 @@ sub WriteGAL
                             &SetRow($row);
                             for ($bit = 0; $ bit < $galbits; $bit++)
                             {
-                                    &SendBit( $array[$galrows * $bit + $row]);
+                                    &SendBit(($array[$galrows * $bit + $row]) ? 1 : 0);
                             }
                             &Strobe($progtime);
                     }
@@ -1812,14 +1818,14 @@ sub WriteGAL
                     &SetRow($galuesrow);
                     for ($bit = 0; $bit < $galuesbytes * 8; $bit++)
                     {
-                            &SendBit( $array[$galuesfuse + $bit]);
+                            &SendBit(($array[$galuesfuse + $bit]) ? 1 : 0);
                     }
                     &Strobe($progtime);
                     # write CFG ATF16V8
                     &SetRow($galcfgrow);
                     for ($bit = 0; $bit < $#{$galconfig} + 1; $bit++)
                     {
-                    	&SendBit( $array[@{$galconfig}[$bit]]);
+                    	&SendBit(($array[@{$galconfig}[$bit]]) ? 1 : 0);
                     }
                     &Strobe($progtime);
             }
@@ -1830,12 +1836,11 @@ sub WriteGAL
 				{
 					for ($bit = 0; $bit < $galbits; $bit++)
 					{
-                        &SendBit ($array[$galrows * $bit + $row]);
+                       &SendBit (($array[$galrows * $bit + $row]) ? 1 : 0);
 					}
 					&SendAddress(6, $row);
-					&SetPV(ON);
+					&SetSDIN(OFF);
 					&Strobe($progtime);
-					&SetPV(OFF);
 				}
 				# write UES
 				if ($galtype == ATF22V10B)
@@ -1843,30 +1848,31 @@ sub WriteGAL
 					&SendBits(68, 1);
 					for ($bit = 0; $bit < ($galuesbytes * 8) ; $bit++)
 					{
-						&SendBit( $array[$galuesfuse + $bit]);
+						&SendBit(($array[$galuesfuse + $bit]) ? 1 : 0);
 					}
 				}	
 				else
 				{
 					for ($bit = 0; $bit < ($galuesbytes * 8) ; $bit++)
 					{
-						&SendBit( $array[$galuesfuse + $bit]);
+						&SendBit(($array[$galuesfuse + $bit]) ? 1 : 0);
 					}
-					&SendBits(68, 0);	
+					if (($galuesbytes * 8) < $galbits)
+					{
+						&SendBits($galbits - ($galuesbytes * 8), 0);
+					}
 				}
 				&SendAddress(6, $galuesrow);
-				&SetPV(ON);
+				&SetSDIN(OFF);
 				&Strobe($progtime);
-				&SetPV(OFF);
 				# write CFG
 				&SetRow($galcfgrow);
 				for ($bit = 0; $bit < $#{$galconfig} + 1; $bit++)
 				{
-					&SendBit( $array[@{$galconfig}[$bit]]);
+					&SendBit(($array[@{$galconfig}[$bit]]) ? 1 : 0);
 				}
-				&SetPV(ON);
-				&Strobe($progtime);
-				&SetPV(OFF);					
+				&SetSDIN(OFF);
+				&Strobe($progtime);				
             }
  			elsif ($galtype == ATF22V10C)
 			{
@@ -1875,7 +1881,7 @@ sub WriteGAL
 				{
 					for ($bit = 0; $bit < $galbits; $bit++)
 					{
-						&SendBit($array[$galrows * $bit + $row]);
+						&SendBit(($array[$galrows * $bit + $row]) ? 1 : 0);
 					}
 					&SendAddress( 6, $row);
 					&SetPV(ON);
@@ -1886,7 +1892,7 @@ sub WriteGAL
 				&SendBits(68, 1);
 				for ($bit = 0; $bit < ($galuesbytes * 8); $bit++)
 				{
-					&SendBit($array[$galuesfuse + $bit]);
+					&SendBit(($array[$galuesfuse + $bit]) ? 1 : 0);
 				}
                 &SendAddress( 6, $row);
                 &SetPV(ON);
@@ -1896,7 +1902,7 @@ sub WriteGAL
 				&SetRow($galcfgrow);	
 				for ($bit = 0; $bit < 19; $bit++)
 				{
-					&SendBit( $array[@{$galconfig}[$bit]]);
+					&SendBit(($array[@{$galconfig}[$bit]]) ? 1 : 0);
 				}
 				&SetSDIN($array[@{$galconfig}[19]]);
                 &SetPV(ON);
@@ -1916,7 +1922,7 @@ sub WriteGAL
 				{
 					for ($bit = 0; $bit < $galbits; $bit++)
 					{
-                        &SendBit ($array[$galrows * $bit + $row]);
+                        &SendBit (($array[$galrows * $bit + $row]) ? 1 : 0);
 					}
 					&SendAddress(6, $row);
 					&SetSDIN(OFF);
@@ -1925,7 +1931,7 @@ sub WriteGAL
 				# UES
 				for ($bit = 0; $bit < ($galuesbytes * 8); $bit++)
 				{
-					&SendBit($array[$galuesfuse + $bit]);
+					&SendBit(($array[$galuesfuse + $bit]) ? 1 : 0);
 				}
 				if (($galuesbytes * 8) < $galbits)
 				{
@@ -1938,7 +1944,7 @@ sub WriteGAL
 				&SetRow($galcfgrow);
 				for ($bit = 0; $bit < $#{$galconfig} + 1; $bit++)
 				{
-					&SendBit ($array[@{$galconfig}[$bit]]);
+					&SendBit (($array[@{$galconfig}[$bit]]) ? 1 : 0);
 				}
 				&SetSDIN(OFF);
 				&Strobe($progtime);
@@ -2168,7 +2174,7 @@ sub SendAddress
 	{
 		while ($count-- > 1)
 		{
-			&SendBit($row & 32);
+			&SendBit(($row & 32) ? 1 : 0);
 			$row <<= 1;
 		}
 		&SetSDIN(($row & 32) ? ON : OFF);
@@ -2177,7 +2183,7 @@ sub SendAddress
 	{
 		while ($count-- > 0)
 		{
-			&SendBit($row & 1);
+			&SendBit(($row & 1) ? 1 : 0);
 			$row >>= 1;
 		}
 		&SetSDIN(OFF);
