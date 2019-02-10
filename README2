@@ -74,6 +74,14 @@ loaded a fresh copy again with a higher number. I solved my struggle by adding t
 between /usr/include/sys/io.h and /usr/include/asm/io.h. 
 After a succesful "install Device::ParallelPort::drv::linux" in cpan, I removed the link again.
 
+_EXTRA REMARK_: some LPT dongles work, other may not. I bought a second USB<->LPT dongle that turned out not to work.
+It has an CH340S chip inside amd does not fulfill the requirements for the USS720 module. So be careful!
+Consulting www.the-sz.com for working variants gives:
+0x047E 0x1001 Agere Systems, Inc. (Lucent)   USS720 Parallel Port
+0x0557 0x2001 ATEN International Co., Ltd    UC-1284 Printer Port
+0x1293 0x0002 Belkin Components [hex]        F5U002 Parallel Port [uss720]
+0x0711 0x0302 Magic Control Technology Corp. Parallel Port
+
 While the Perl-Tk implementation tries to mimmic the galblast version as best as I could, there are some differences.
 I am not a 'fluent' Perl programmer, but I can get most things done as I want in Perl. If someone more capable
 in Perl has hints and/or improvements I am happy to apply these.
