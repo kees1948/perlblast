@@ -1,0 +1,3282 @@
+#!/usr/bin/perl -w
+
+    use Tk;
+	use Tk::Listbox;
+	use Tk::LabEntry;
+	use Tk::Optionmenu;
+	use Getopt::Std;
+
+    use POSIX qw( strftime );
+	use enum qw(UNKNOWN GAL16V8 GAL18V10 GAL20V8 GAL20RA10  GAL20XV10 GAL22V10 GAL26CV12 GAL6001 GAL6002 ATF16V8B ATF22V10B ATF22V10C);
+	use enum qw(FALSE TRUE); # boolean
+	use enum qw(NONE READGAL READPES VERIFYGAL SCLKTEST WRITEGAL ERASEGAL ERASEALL CHECKBURNSEC BURNSECURITY CHECKPES WRITEPES VPPTEST TESTGAL); # actions
+	use enum qw(ISNONE MSG_OK MSG_ALERT MSG_WARNING MSG_ASSURE);  # msg types
+	use enum qw(OFF ON); # signals, levels
+
+	use Device::ParallelPort;
+	use Time::HiRes qw( usleep ); 
+#####################################################################################################################
+# 
+# perlblast, a GAL programming utility written in Perl. By C.Schoenmakers Copyright (C) 2018
+#
+# This version uses (/dev/)parport? access to the programming hardware, this way you _can_ use even
+# usb<->parallel dongles but that may require some edit of drivers/usb/misc/uss720.c in your Linux source tree to
+# add the usb id (mmmm:dddd) to the table near the bottom of the uss720.c file, like
+# Bus 001 Device 033: ID 0711:0302 Magic Control Technology Corp. Parallel Port
+# in my case.
+#
+# This is a Perl-Tk implementation of GAL programming software
+# based on various work from other people
+# GALBLAST: by Manfred Winterhoff
+# atblast:  http://www.bhabbott.net.nz/atfblast.html up to 2017-11-19 V0.31
+#
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+#####################################################################################################################
+#
+# see also the README
+#
+# usage: perlblast [<-p port# >]
+#
+# default port is (/dev/)parport0 higher numbers are possibe
+#
+# example:     perlblast -p4      uses (/dev/)parport4
+#
+#
+
+
+$geometry = "600x800";
+my %options=();
+
+$ThisVersion = "Rev: 0.4.1 2018-10-22 C.S.";
+
+# parport control bits
+$STROBE =  1;	# 1, invert
+$LNFEED =  2;	# 14, invert
+$INIT   =  4;	# 16 
+$SELCTP =  8;	# 17,  invert
+# status
+$ERROR  = 8;	# 15
+$SELECT = 16;	# 13
+$PAPOUT = 32;	# 12
+$ACK    = 64;   # 10
+$BUSY   = 128;	# 11, invert
+
+# SET initial port
+$portnum  = 0;					# 0=parport0, 1=parport1, 2=parport2 etc
+
+### manufacturer ID
+$LATTICE 	= 0xA1;
+$NATIONAL 	= 0x8F;
+$SGSTHOMSON = 0x20;
+
+###################################################################################################################
+#
+# GAL information
+#
+###################################################################################################################
+# type,id0|id1,name,fuses,pins,rows,bits,uesrow,uesfuse,uesbytes,eraserow,eraseallrow,pesrow,pesbytes,cfgrow,config,vpp,progtime,erasetime,vcc
+# |     |   |    |   |     |    |    |     |      |        |        |          |        |      |        |      |      |    |        |       |
+# |     |   |    |   |     |    |    |     |      |        |        |          |        |      |        |      |      |    |        |       |
+# |     |   |    |   |     |    |    |     |      |        |        |          |        |      |        |      |      |    |        |       |
+# |     |   |    |   |     |    |    |     |      |        |        |          |        |      +---+    |      |      |    |        |       |
+# |     |   |    |   |     |    |    |     |      |        |        |          |        +------+   |    |      |      |    |        |       |
+# |     |   |    |   |     |    |    |     |      |        |        |          +-----------+   |   |    |      |      |    |        |       |
+# |     |   |    |   |     |    |    |     |      |        |        +------------------+   |   |   |    |      |      |    |        |       |
+# |     |   |    |   |     |    |    |     |      |        +-----------------------+   |   |   |   |   ++      |     ++    |        |       |
+# |     |   |    |   |     |    |    |     |      *---------------------------+    |   |   |   |   |   |       |     |     |        |       |
+# |     |   |    |   |     |    |    |     +-----------------------------+    |    |   |   |   |   |   |       |     |     |    +---+       |
+# |     |   |    |   |     |    |    +-------------------------------+   |    |    |   |   |   |   |   |       |     |     |    |           |
+# |     |   |    |   |     |    +-------------------------------+    |   |    |    |   |   |   |   |   |       |     |     |    |    +------+
+# |     |   |    |   |     +--------------------------------+   |    |   |    |    |   |   |   |   |   |       |     |     |    |    |
+# |     |   |    |   +---------------------------------+    |   |    |   |    |    |   |   |   |   |   |       |     |     |    |    |
+# |     |   |    +--------------------------+          |    |   |    |   |    |    |   |   |   |   |   |       |     |     |    |    |
+# |     |   +-----------------------+       |          |    |   |    |   |    |    |   |   |   |   |   |       |     |     |    |    |
+# |     +---------------------+     |       |          |    |   |    |   |    |    |   |   |   |   |   |       |     |     |    |    |
+# +-----------------v         v     v       v          v    v   v    v   v    v    v   v   v   v   v   v       v     v     v    v    v
+#
+{
+no warnings 'once';
+
+%galinfo = (0 =>  [UNKNOWN,   0x00, 0x00, "unknown"  ,    0,  0,  0,   0,  0,    0, 0,  0,  0,  0,  8,  0, cfgNone  , 00, 000, 000, 5.0],
+			1 =>  [GAL16V8,   0x00, 0x1A, "GAL16V8"  , 2194, 20, 32,  64, 32, 2056, 8, 63, 54, 58,  8, 60, cfg16V8,   63, 100, 100, 5.0],
+		    2 =>  [GAL18V10,  0x50, 0x51, "GAL18V10" , 3540, 20, 36,  96, 36, 3476, 8, 61, 60, 58, 10, 16, cfg18V10,  00, 000, 000, 5.0],
+			3 =>  [GAL20V8,   0x20, 0x3A, "GAL20V8"  , 2706, 24, 40,  64, 40, 2568, 8, 63, 59, 58,  8, 60, cfg20V8AB, 63, 100, 100, 5.0],
+			4 =>  [GAL20RA10, 0x60, 0x61, "GAL20RA10", 3274, 24, 40,  80, 40, 3210, 8, 61, 60, 58, 10, 16, cfg20RA10, 00, 000, 000, 5.0],
+			5 =>  [GAL20XV10, 0x65, 0x66, "GAL20XV10", 1671, 24, 40,  40, 44, 1631, 5, 61, 60, 58,  5, 16 ,cfg20XV10, 00, 000, 000, 5.0], #/* 4,5,6,29,36,37 macht was,38,44,46,52 CLEARALL,53 macht was,60 CLEARALL */
+			6 =>  [GAL22V10,  0x48, 0x49, "GAL22V10" , 5892, 24, 44, 132, 44, 5828, 8, 61, 60, 58, 10, 16, cfg22V10 , 56,  40, 100, 5.0],
+			7 =>  [GAL26CV12, 0x58, 0x59, "GAL26CV12", 6432, 28, 52, 122, 52, 6368, 8, 61, 60, 58, 12, 16, cfg26CV12, 00, 000, 000, 5.0],
+			8 =>  [GAL6001,   0x40, 0x41, "GAL6001"  , 8294, 24, 78,  75, 97, 8222, 9, 63, 62, 96,  8, 8,  cfg6001,   00, 000, 000, 5.0],
+			9 =>  [GAL6002,   0x44, 0x44, "GAL6002"  , 8330, 24, 78,  75, 97, 8258, 9, 63, 62, 96,  8, 8,  cfg6002,   00, 000, 000, 5.0],
+			10 => [ATF16V8B,  0x00, 0x00," ATF16V8B" , 2194, 20, 32,  64, 32, 2056, 8, 63, 54, 58,  8, 60, cfg16V8AB, 48,  10, 100, 3.3],
+			11 => [ATF22V10B, 0x00, 0x00," ATF22V10B", 5892, 24, 44, 132, 44, 5828, 8, 61, 60, 58, 10, 16, cfg22V10 , 48,  10, 100, 3.3],
+			12 => [ATF22V10C, 0x00, 0x00," ATF22V10C", 5892, 24, 44, 132, 44, 5828, 8, 61, 60, 58, 10, 16, cfg22V10 , 48,  10, 100, 3.3],
+);
+
+@cfgNone = ();
+
+@cfg16V8 = (
+ 	2128,2129,2130,2131,2132,2133,2134,2135,2136,2137,2138,2139,2140,2141,2142,2143,
+	2144,2145,2146,2147,2148,2149,2150,2151,2152,2153,2154,2155,2156,2157,2158,2159,
+	2048,2049,2050,2051,2193,2120,2121,2122,2123,2124,2125,2126,2127,2192,2052,2053,
+	2054,2055,2160,2161,2162,2163,2164,2165,2166,2167,2168,2169,2170,2171,2172,2173,
+	2174,2175,2176,2177,2178,2179,2180,2181,2182,2183,2184,2185,2186,2187,2188,2189,
+	2190,2191 
+);
+
+@cfg16V8AB = (
+    2048,2049,2050,2051,2193,2120,2121,2122,2123,2128,2129,2130,2131,2132,2133,2134,
+	2135,2136,2137,2138,2139,2140,2141,2142,2143,2144,2145,2146,2147,2148,2149,2150,
+	2151,2152,2153,2154,2155,2156,2157,2158,2159,2160,2161,2162,2163,2164,2165,2166,
+	2167,2168,2169,2170,2171,2172,2173,2174,2175,2176,2177,2178,2179,2180,2181,2182,
+	2183,2184,2185,2186,2187,2188,2189,2190,2191,2124,2125,2126,2127,2192,2052,2053,
+	2054,2055
+);
+
+@cfg18V10 = (
+    3457,3456,3459,3458,3461,3460,3463,3462,3465,2464,3467,3466,3469,3468,3471,3470,3473,3472,3475,3474
+);
+
+@cfg20V8 = (
+    2640,2641,2642,2643,2644,2645,2646,2647,2648,2649,2650,2651,2652,2653,2654,2655,
+	2656,2657,2658,2659,2660,2661,2662,2663,2664,2665,2666,2667,2668,2669,2670,2671,
+    2560,2561,2562,2563,2705,2632,2633,2634,2635,2636,2637,2638,2639,2704,2564,2565,
+	2566,2567,2672,2673,2674,2675,2676,2677,2678,2679,2680,2681,2682,2683,2684,2685,
+	2686,2687,2688,2689,2690,2691,2692,2693,2694,2695,2696,2697,2698,2699,2700,2701,
+	2702,2703
+);
+
+@cfg20V8AB = (
+    2560,2561,2562,2563,2705,2632,2633,2634,2635,2640,2641,2642,2643,2644,2645,2646,
+	2647,2648,2649,2650,2651,2652,2653,2654,2655,2656,2657,2658,2659,2660,2661,2662,
+	2663,2664,2665,2666,2667,2668,2669,2670,2671,2672,2673,2674,2675,2676,2677,2678,
+	2679,2680,2681,2682,2683,2684,2685,2686,2687,2688,2689,2690,2691,2692,2693,2694,
+	2695,2696,2697,2698,2699,2700,2701,2702,2703,2636,2637,2638,2639,2704,2564,2565,
+	2566,2567
+);
+
+@cfg20RA10 = (
+    3200,3201,3202,3203,3204,3205,3206,3207,3208,3209
+);
+
+@cfg20XV10 = (
+    1630,1628,1629,1620,1621,1622,1610,1611,1612,1613,1614,1600,1601,1602,1603,1604,
+	1627,1626,1623,1624,1625,1619,1618,1617,1616,1615,1609,1608,1607,1606,1605
+);
+
+@cfg22V10 = (
+    5809,5808,5811,5810,5813,5812,5815,5814,5817,5816,5819,5818,5821,5820,5823,5822,
+	5825,5824,5827,5826
+);
+
+@cfg26CV12 = (
+    6345,6344,6347,6346,6349,6348,6351,6350,6353,6352,6355,6354,6357,6356,6359,6358,
+	6361,6360,6363,6362,6365,6364,6367,6366
+);
+
+@cfg6001 = (
+    8221,8220,8179,8183,8187,8191,8195,8199,8203,8207,8211,8215,8214,8210,8206,8202,
+	8198,8194,8190,8186,8182,8178,8216,8217,8212,8213,8208,8209,8204,8205,8200,8201,
+    8196,8197,8192,8193,8188,8189,8184,8185,8180,8181,8156,8159,8162,8165,8168,8171,
+	8174,8177,8154,8157,8160,8163,8166,8169,8172,8175,8176,8173,8170,8167,8164,8161,
+	8158,8155,8218,8219
+);
+
+@cfg6002 = (
+    8257,8256,8179,8183,8187,8191,8195,8199,8203,8207,8211,8215,8214,8210,8206,8202,
+	8198,8194,8190,8186,8182,8178,8216,8217,8212,8213,8208,8209,8204,8205,8200,8201,
+    8196,8197,8192,8193,8188,8189,8184,8185,8180,8181,8255,8254,8253,8252,8251,8250,
+	8249,8248,8247,8246,8245,8244,8243,8242,8241,8240,8239,8238,8220,8221,8222,8223,
+	8224,8225,8226,8227,8228,8229,8230,8231,8232,8233,8234,8235,8236,8237,8156,8159,
+	8162,8165,8168,8171,8174,8177,8154,8157,8160,8163,8166,8169,8172,8175,8176,8173,
+	8170,8167,8164,8161,8158,8155,8218,8219
+);
+
+} # end off suppressed 'once' warnings
+
+###################################################################################################################
+my @fuses;	# DUT fuses
+my @ffuses; # file fuses
+my @pes = (0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+my $vpp = 0;
+my $erasetime = 0;
+my $progtime = 0;
+my $read12v = 48;     # 12V
+my $galvcc = 0.0;
+
+my $galtype;
+my $galname;
+
+# hardware register copies
+my $ls273shadow = 0;
+my $dacvalueshadow = 0;
+
+my $portname = "";
+my $portid = 'auto:0';
+my $parport = -1;
+
+#================================================================================================
+#
+# create main window
+#
+#================================================================================================
+my $mw = MainWindow->new(-title => "PerlBlast", -relief => 'raised', -borderwidth => 5, -background => 'darkgrey');
+	$mw->geometry($geometry);
+	$mw->protocol('WM_DELETE_WINDOW' => \&MyExit);			# called when window is closed
+
+# create window top drop down menu's
+	$mw->configure(-menu => my $menubar = $mw->Menu);
+	my $file = $menubar->cascade(-label => '~File');
+	my $galm = $menubar->cascade(-label => '~GAL');
+#	my $typm = $menubar->cascade(-label => '~Type');
+	my $help = $menubar->cascade(-label => '~Help');
+#
+	$file->command(
+   	 	-label       => 'Open JEDEC',
+    	-accelerator => 'Ctrl-o',
+    	-underline   => 0,
+		-command   => \&OpenJedec,
+	);
+	$file->separator;
+	$file->command(
+    	-label       => 'Save JEDEC',
+    	-accelerator => 'Ctrl-s',
+    	-underline   => 0,
+		-command     => \&SaveJedec,
+	);
+	$file->separator;
+	$file->command(
+    	-label       => "Exit Program",
+    	-accelerator => 'Ctrl-q',
+    	-underline   => 0,
+    	-command     => \&MyExit,
+	);
+#
+	$galm->command(
+		-label 		=>	'Read GAL',
+		-command	=>	\&ReadGal,
+	);
+	$galm->command(
+		-label 		=>	'Write GAL',
+		-command    =>  \&WriteGal,
+	);
+
+#
+	$help->command(-label => 'Version', -command => \&PrintVersion);    ###sub {print "Version\n"});
+	$help->separator;
+	$help->command(-label => 'About',   -command => \&PrintAbout);      ###sub {print "$ThisVersion\n"});
+#
+# create frame to position the selections and buttons
+#
+	$tp = $mw->Frame (
+			-height => 90,
+	)->pack(-side => 'top', -fill => 'x');
+# show port, fixed for now
+	$tp->LabEntry (
+			-label => 'Port:',
+			-labelPack => [-side => 'left', -anchor => 'w'],
+			-textvariable => \$portname,
+			-font => ['courier', '12', 'bold'],
+			-width => 10,
+			-relief => 'sunken',
+	)->place(-x => 0, -y => 0);
+# show device Type: text	
+	$tp->Label (
+			-text => 'Type:',
+	)->place(-x => 150, -y => 2);
+# 
+# create a drop down menu
+	my $opt = $tp->Optionmenu(
+		-options => [
+				[UNKNOWN => 0], [GAL16V8 => 1], [GAL18V10 => 2], [GAL20V8 => 3], [GAL20RA10 => 4],[GAL20XV10 => 5],[GAL22V10 => 6],
+				[GAL26CV12 => 7],[GAL6001 => 8],[GAL6002 => 9],[ATF16V8B => 10],[ATF22V10B => 11],[ATF22V10C => 12] 
+					],
+		-command => sub {  \&SetGalParms(shift) },
+		-variable => $galtype,
+		-textvariable => $galname,
+		-width => 10,
+	)->place(-x => 210, -y => 0);
+#
+	$wp= $tp->Button (
+		-text => "Write PES",
+		-width => 10,
+		-command => \&WritePes,
+	)->place(-x => 330, -y => 0);
+#
+	$lj = $tp->Button (
+		-text => "Load JEDEC",
+		-width => 10,
+		-command => \&OpenJedec,
+	)->place(-x => 0, -y => 30);
+#
+	$rg = $tp->Button (
+		-text => "Read GAL",
+		-width => 10,
+		-command => \&ReadGal,
+	)->place(-x => 110, -y => 30);
+#
+	$vg = $tp->Button (
+		-text => "Verify GAL",
+		-width => 10,
+		-command => \&VerifyGal,
+	)->place( -x => 220, -y => 30);
+#
+	$se = $tp->Button (
+		-text => "SECURITY",
+		-width => 10,
+		-command => \&BurnSecurity,
+	)->place(-x => 330, -y => 30);
+#
+	$sj = $tp->Button (
+		-text => "Save JEDEC",
+		-width => 10,
+		-command => \&SaveJedec,
+	)->place( -x => 0, -y => 60);
+#
+	$wg = $tp->Button (
+		-text => "Write GAL",
+		-width => 10,
+		-command => \&WriteGal,
+	)->place(-x => 110, -y => 60);
+#
+	$eg = $tp->Button (
+		-text => "Erase GAL",
+		-width => 10,
+		-command => \&EraseGal,
+	)->place(-x => 220, -y => 60);
+#
+	$ea = $tp->Button (
+		-text => "Erase ALL",
+		-width => 10,
+		-command => \&EraseAll,
+	)->place(-x => 330, -y => 60);
+#
+	$lp = $tp->Button (
+		-text => "Load PES",
+		-width => 10,
+		-command => \&LoadPes,
+	)->place(-x => 440, -y => 0);
+#
+	$lp = $tp->Button (
+		-text => "Save PES",
+		-width => 10,
+		-command => \&SavePes,
+	)->place(-x => 440, -y => 30);
+#
+#
+# listbox for jedec file data
+#
+	$blg = $mw->Scrolled ('Listbox',
+			-scrollbars => 'se',
+			-width => 580,
+			-height => 780,
+	)-> pack(-side => 'bottom');
+	
+#================================================================================================
+#
+# end of GUI definitions
+#
+# program runs through this too
+#
+#================================================================================================
+####################################################################################################
+#
+# parse command line args
+#
+####################################################################################################
+    getopts("p:", \%options);
+
+	if (defined $options{p})
+	{
+		$portnum = $options{p};	
+	}
+	
+	&InitAll;					# put interface and variables in decent state
+
+	if ($portname ne "")
+	{
+		($parport = Device::ParallelPort->new($portid)) || die "Can't open the choosen port $portname!\n";
+	}
+	else
+	{
+		printf "perlblast: device $portname does not exist!\n";
+		exit (-1);				# does not return
+	}
+
+	&HardwareInit;				# setup programming hardware to a known state
+
+	MainLoop();
+
+#================================================================================================
+#
+# here we start all functions
+#
+#================================================================================================
+
+# read all settings for this kind of GAL
+# and SET all the variables to the correct name
+sub SetGalParms
+{
+# type,id0|id1,name,fuses,pins,rows,bits,uesrow,uesfuse,uesbytes,eraserow,eraseallrow,pesrow,pesbytes,cfgrow,config,vpp,progtime,erasetime
+	@gal_setting = @{$galinfo{$_[0]}};									# return array
+	s{^\s+|\s+$}{}g foreach @gal_setting;
+
+	($galtype,$galid0,$galid1,$galname,$galfuses,$galpins,$galrows,$galbits,$galuesrow,$galuesfuse,$galuesbytes,$galeraserow,$galeraseallrow,
+	$galpesrow,$galpesbytes,$galcfgrow,$galconfig,$galvpp,$galprogtime,$galerasetime,$galvcc) = @gal_setting; # split up array
+}
+
+#################################################################################################
+#
+# disable all buttons for now
+#
+#################################################################################################
+sub KeysOff
+{
+	$wp->configure(-state => 'disabled');
+	$lj->configure(-state => 'disabled');
+	$rg->configure(-state => 'disabled');
+	$vg->configure(-state => 'disabled');
+	$se->configure(-state => 'disabled');
+	$sj->configure(-state => 'disabled');
+	$wg->configure(-state => 'disabled');
+	$eg->configure(-state => 'disabled');
+	$ea->configure(-state => 'disabled');
+	$opt->configure(-state => 'disabled');
+}
+
+#################################################################################################
+#
+# re-enable the buttons
+#
+#################################################################################################
+sub KeysOn
+{
+	$wp->configure(-state => 'normal');
+	$lj->configure(-state => 'normal');
+	$rg->configure(-state => 'normal');
+	$vg->configure(-state => 'normal');
+	$se->configure(-state => 'normal');
+	$sj->configure(-state => 'normal');
+	$wg->configure(-state => 'normal');
+	$eg->configure(-state => 'normal');
+	$ea->configure(-state => 'normal');
+	$opt->configure(-state => 'normal');
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub ToListBox
+{
+	my $string = $_[0];
+	$blg->insert('end', $string);
+}	
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub ClrListBox
+{
+	$blg->delete(0, 'end');
+}
+
+#################################################################################################
+#
+# 
+#
+#################################################################################################
+sub GetSetup
+{
+
+	if ($portname eq "")
+	{
+		&DialogHandler(MSG_ALERT, "Can't open the given parport", 0);
+		return FALSE;
+	}
+
+	if ($galtype == UNKNOWN)
+	{
+		&DialogHandler(MSG_ALERT, "Select a GAL first", 0);
+		return FALSE;
+	}
+	return TRUE;
+}
+
+#################################################################################################
+#
+# Load the JEDEC file
+#
+#################################################################################################
+sub OpenJedec
+{
+	if (&LoadFile)
+	{
+		DialogHandler(MSG_ALERT,"Filechecksum in error !!", 0);
+	}
+}
+
+#################################################################################################
+#
+# Save a JEDEC file
+#
+#################################################################################################
+sub SaveJedec
+{
+	&SaveFile;	
+}
+
+#################################################################################################
+#
+# Load PES from file
+#
+#################################################################################################
+sub LoadPes
+{
+	&LoadPESFile;
+	&ParsePES;	
+}
+
+#################################################################################################
+#
+# Save PES to file
+#
+#################################################################################################
+sub SavePes
+{
+	&SavePESFile;
+}
+
+#################################################################################################
+#
+# Read GAL info from DUT
+#
+#################################################################################################
+sub ReadGal
+{
+	if (&TestProperGAL == FALSE)
+	{
+		return;
+	} 
+	@fuses = &ReadGAL();
+	
+	&FormatJEDEC;
+}
+
+#################################################################################################
+#
+# Write fusebuffer to DUT
+#
+#################################################################################################
+sub WriteGal
+{
+	if ($#fuses < 1)
+	{
+		&DialogHandler(MSG_ALERT, "Load a JEDEC fuse map first", 0);
+		return;
+	}
+	if (!&CheckJEDEC(@fuses))
+	{
+		RETURN true;
+	}
+	if (!&TestProperGAL)
+	{
+		return TRUE;
+	}
+	&WriteGAL(\@fuses);
+
+}
+
+#################################################################################################
+#
+# Erase the DUT normal fuses
+#
+#################################################################################################
+sub EraseGal
+{
+	&EraseGAL;
+}
+
+#################################################################################################
+#
+# Erase EVERYTHING from the DUT
+#
+#################################################################################################
+sub EraseAll
+{
+	&EraseALL;
+}
+
+#################################################################################################
+#
+# Write the PES bytes to the DUT
+#
+#################################################################################################
+sub WritePes
+{
+	
+	$vpp = $galvpp;
+	$progtime = $galprogtime;
+	$erasetime = $galerasetime;
+
+	if (&GetSetup == FALSE)
+	{
+#		return FALSE;
+	}
+	if (&DialogHandler(MSG_ASSURE, "WritePES", CHECKPES) == TRUE) 
+	{
+		&WritePES;
+	}
+}
+
+#################################################################################################
+# 
+# program the security fuse
+#
+#################################################################################################
+sub BurnSecurity
+{
+
+	if(! &TestProperGAL)
+	{
+		return TRUE;
+	}
+
+	if (&DialogHandler(MSG_WARNING, "Programming the security fuse will prohibit the readout and verification of the GAL. Do you want to continue ?" ,CHECKBURNSEC) != TRUE)
+	{
+		return TRUE;
+	}
+	&BurnSECURITY;
+}
+
+#################################################################################################
+#
+# Verify the DUT with the fuse buffer
+#
+#################################################################################################
+sub VerifyGal
+{
+	if ($#fuses < 1)
+	{
+		&DialogHandler(MSG_ALERT, "Load a JEDEC fuse map first", 0);
+		return;
+	}
+	&VerifyGAL;
+}
+
+#################################################################################################
+#
+# 
+#
+#################################################################################################
+sub SetPort
+{
+	
+	$portid = sprintf "auto:%1d", $portnum;
+	$portname = sprintf "parport%1d", $portnum;
+}
+
+#################################################################################################
+#
+# 
+#
+#################################################################################################
+sub PrintAbout
+{
+	&DialogHandler(MSG_ALERT, "PerlBlast. An in Perl-Tk written version of GalBlast/ATFBlast", 0);
+
+}
+
+#################################################################################################
+#
+# 
+#
+#################################################################################################
+sub PrintVersion
+{
+	&DialogHandler(MSG_ALERT, "$ThisVersion", 0);
+}
+
+#================================================================================================
+#
+# here the real action is done
+#
+#================================================================================================
+sub ReadGAL
+{
+	my @rfuses;
+	my $bit;
+	my $row;
+
+	if (&TurnOn(READGAL))
+	{
+            if(($galtype ==  GAL16V8) || ($galtype == GAL20V8))
+            {	
+                    # read fuse rows
+                    for ($row = 0; $row < $galrows; $row++)
+                    {
+                            &StrobeRow($row);
+                            for ($bit = 0; $bit < $galbits; $bit++)
+                            {
+                                    $rfuses[$galrows * $bit + $row] = &ReceiveBit;
+                            }
+                    }
+                    # read UES
+                    &StrobeRow($galuesrow);
+                    for ($bit = 0; $bit < $galuesbytes * 8; $bit++)
+                    {
+                            $rfuses[$galuesfuse + $bit] = &ReceiveBit;
+                    }
+                    # read CFG
+                    &StrobeRow($galcfgrow);
+                    for ($bit = 0; $bit <  $#{$galconfig}+1 ; $bit++)
+                    {
+                            if ($pes[2] == 0x1A)
+                            {
+                                    $rfuses[$cfg16V8AB[$bit]] = &ReceiveBit;
+                            }
+                            elsif ($pes[2] == 0x20)
+                            {
+                                    $rfuses[$cfg20V8[$bit]] = &ReceiveBit;
+                            }
+                            elsif ($pes[2] == 0x3A)
+                            {
+                                    $rfuses[$cfg20V8AB[$bit]] = &ReceiveBit;
+                            }
+                            else
+                            {
+                                    # pes[2] = 0 or pes[2] is invalid
+                                    $rfuses[$cfg16V8[$bit]] = &ReceiveBit;
+                            }
+                    }
+            }	
+            elsif (($galtype == GAL6001) || ($galtype == GAL6002))
+            {
+                    for ($row = 0; $row < 78; $row++)
+                    {
+                            &StrobeRow($row);
+                            &DiscardBits(20);
+                            for ($bit = 0; $bit < 11 ; $bit++)
+                            {
+                                    $rfuses[7296 + 78 * $bit + $row] = &ReceiveBit;
+                            }
+                            for ($bit = 0; $bit < 64 ; $bit++)
+                            {
+                                    $rfuses[114 * $bit + $row] = &ReceiveBit;
+                            }
+                            &DiscardBits(24);
+                    }
+                    for ($row = 0; $row < 64; $row++)
+                    {
+                            &SendBits(31, 0);
+                            for ($bit = 0 ; $bit < 64; $bit++)
+                            {
+                                    &SendBit(($bit != $row) ? 1 : 0);
+                            }
+                            &SendBits(24, 0);
+                            &SetSDIN(OFF); #?
+                            &Strobe(2);
+                            for ($bit = 0; $bit < 20; $bit++)
+                            {
+                                    $rfuses[78 + 114 * $row + $bit] = &ReceiveBit;
+                            }
+                            &DiscardBits(83);
+                            for ($bit = 0; $bit < 16; $bit++)
+                            {
+                                    $rfuses[98 + 114 * $row + $bit] = &ReceiveBit;
+                            }
+                    }
+                    # read UES
+                    &StrobeRow($galuesrow);
+                    &DiscardBits(20);
+                    for ($bit = 0; $bit < 72; $bit++)
+                    {
+                            $rfuses[$galuesbits + $bit] = &ReceiveBit;
+                    }
+                    # read CFG
+                    &SetRow($galcfgrow);
+                    &Strobe(2);
+                    for ($bit = 0; $bit < $#{$galconfig}+1; $bit++)
+                    {
+                            $rfuses[@{$galconfig}[$bit]] = &ReceiveBit;
+                    }
+            }
+            elsif ($galtype == ATF16V8B)
+            {
+                    for ($row = 0; $row < $galrows; $row++)
+                    {
+                            &StrobeRow($row);
+                            for ($bit = 0; $ bit < $galbits; $bit++)
+                            {
+                                    $rfuses[$galrows * $bit + $row] = &ReceiveBit;
+                            }
+                    }
+                    # read UES STF16V8
+                    &StrobeRow($galuesrow);
+                    for ($bit = 0; $bit < $galuesbytes * 8; $bit++)
+                    {
+                            $rfuses[$galuesfuse + $bit] = &ReceiveBit;
+                    }
+                    # read CFG ATF16V8
+                    &StrobeRow($galcfgrow);
+                    for ($bit = 0; $bit < $#{$galconfig} + 1; $bit++)
+                    {
+                            $rfuses[@{$galconfig}[$bit]] = &ReceiveBit;
+                    }
+            }
+            elsif (($galtype ==  GAL22V10) || ($galtype == ATF22V10B) || ($galtype == ATF22V10C))
+            {
+				for ($row = 0; $row < $galrows; $row++)
+				{
+					&StrobeRow($row);
+					for ($bit = 0; $bit < $galbits; $bit++)
+					{
+						$rfuses[$galrows * $bit + $row] = &ReceiveBit;
+					}
+					&Delay(1);
+				}
+				# read UES
+				&StrobeRow($galuesrow);
+				if ($galtype != GAL22V10)
+				{
+					&DiscardBits(68);			# ATF22V10X
+				}
+				# common for all
+				for ($bit = 0; $bit < ($galuesbytes * 8); $bit++)
+				{
+					$rfuses[$galuesfuse + $bit] = &ReceiveBit;  # bug 2019-02-08
+				}
+				&Delay(1);
+				# read CFG
+				&SetRow($galcfgrow);
+				&Strobe(2);
+                for ($bit = 0; $bit < $#{$galconfig}+1; $bit++)
+                {
+                   $rfuses[@{$galconfig}[$bit]] = &ReceiveBit;
+                }
+            }
+            &GetPES;
+            &TurnOff;
+	}
+	return @rfuses;
+}
+
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub VerifyGAL
+{
+	my @vfuses = @fuses;	# filled by CheckJEDEC
+	my @rfuses;
+	my $i;
+
+	if (!&TestProperGAL)
+	{
+		return TRUE;
+	}
+	@rfuses = &ReadGAL;
+	
+	if ($#vfuses != $#rfuses)
+	{
+		&DialogHandler(MSG_ALERT,"Fusemap mismatch!", 0); 
+		return TRUE;
+	}
+	for ($i = 0; $i < $#rfuses; $i++)
+	{
+		if ($rfuses[$i] != $vfuses[$i])
+		{
+			&DialogHandler(MSG_ALERT,"Fusemap mismatch!", 0); 
+			return TRUE;
+		}
+	}
+	&DialogHandler(MSG_ALERT,"Fusemap correct match", 0); 
+	return TRUE;
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub ReadPES
+{
+	&TurnOn(READPES);
+	&GetPES($_[0]);
+	&TurnOff;
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub GetPES
+{
+	my $bitmask;
+	my $byte;
+	
+	&StrobeRow($galpesrow);
+	if (($galtype == GAL6001) || ($galtype == GAL6002))
+	{
+		&DiscardBits(20);
+	}
+	for ($byte = 0; $byte < $galpesbytes; $byte++)
+	{
+		$pes[$byte] = 0;
+		for ($bitmask = 0x01; $bitmask <= 0x80; $bitmask <<= 1)
+		{
+			if (&ReceiveBit)
+			{
+				$pes[$byte] |= $bitmask;
+			}
+		}
+	}
+}
+
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub TestProperGAL
+{
+	my $type = 1;
+	my $galtypetmp = $galtype;
+
+	if (&GetSetup == FALSE)
+	{
+		return FALSE;
+	}
+	&ReadPES;
+#
+	if (($pes[7] eq 'F') && ($pes[5] eq '1') && ($pes[4] eq 'V') && ($pes[3] eq '1') && ($pes[2] eq '0'))
+	{
+		if ($pes[1] == 'B')
+		{
+			$galtype = ATF22V10B;
+		}
+		else
+		{
+			$galtype = ATF22V10C;
+		}
+	}
+	elsif (($pes[6] eq 'F') && ($pes[5] eq '1') && ($pes[4] eq '6') && ($pes[3] eq 'V') && ($pes[2] eq '8'))
+	{
+		$galtype = ATF16V8B;
+	}
+	elsif (($pes[2] != 0) && ($pes[2] != 0xFF))
+	{
+		for ($type = (keys %galinfo) - 1; $type; $type--)
+		{
+			&SetGalParms($type);
+			if (($pes[2] == $galid0) || ($pes[2] == $galid1))
+			{
+				goto TPG1;
+			}
+		}
+	}
+TPG1:
+#
+#
+#
+	if ($type == 0)
+	{
+		if (&DialogHandler(MSG_WARNING, "Unknown or illegal PES, continue?", 0) == FALSE)
+		{
+			$galtype = $galtypetmp;
+			return FALSE;
+		}
+	}
+	else
+	{
+		if ($type != $galtypetmp)
+		{
+			my $return = &DialogHandler(MSG_WARNING, "PES indicates a different GAL type than selected, Change to detected GAL type?", TESTGAL);
+			if ($return == FALSE) 
+			{
+				return FALSE;
+			}
+			else
+			{
+				$galtype = $galtypetmp;
+			}
+		}
+	}
+	&ParsePES;
+	return TRUE;
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub ParsePES
+{
+	my $algo;
+	my @duration = (1,2,5,10,20,30,40,50,60,70,80,90,100,200,0,0);
+
+	$vpp = $galvpp;
+	$progtime = $galprogtime;
+	$erasetime = $galerasetime;
+
+	if  (($galtype ==  ATF16V8B) || ($galtype == ATF22V10B) || ($galtype == ATF22V10C))
+	{
+		# already set all
+		return;
+	}
+	$algo = $pes[1] & 0x0F;
+# i.e. Lattice 22V10
+	if ($algo == 5)
+	{
+		$erasetime = (25 << (($pes[4] >> 2) & 7))/ 2;	
+		$progtime = @duration[((($pes[5] << 8) | $pes[4]) >> 5) & 0x0F];
+		$vpp = 2 *(($pes[5] >> 1) & 0x1F) + 20;
+		return;
+	}
+	else
+	{
+		if(($galtype == GAL16V8) || ($galtype == GAL20V8))
+		{
+			#
+			if ($algo == 0)
+			{
+			 	$vpp = 63; # 15.75V (3.75V dac)
+				return;
+			}
+			elsif ($algo ==  1)
+			{
+				$vpp = 63;
+				$progtime = 80;
+				return;
+			}
+			elsif ($algo == 2)
+			{
+				$vpp = 66; # 16.5 V (4.5V dac)
+				$progtime = 10;
+				return;
+			}
+			elsif ($algo == 3)
+			{
+				$vpp = ($pes[3] == 0x8F) ? 60 : 58;  # NATIONAL 15.0 or 14.5V
+				$progtime = 40;
+				return;
+			}
+			elsif ($algo == 4)
+			{
+				$vpp = 56; # 14V
+				return;
+			}
+			else
+			{
+				return;
+			}
+		}
+		else
+		{
+			$erasetime = ($pes[3] == 0x8F) ? 50 : 100; # NATIONAL 
+			if ($algo == 0)
+			{
+				$vpp = 66; # 16.5V
+				$progtime = 10;
+				return;
+			}
+			elsif ($algo == 1)	
+			{
+				$vpp = 63; # 15.75V
+				$progtime = 1000;
+				return;
+			}
+			elsif ($algo == 2)
+			{
+				$vpp = ($pes[3] == 0x8F) ? 60 : 58; # NATIONAL 15.0V or 14.5V
+				$progtime = 40;
+				return;
+			}
+			elsif ($algo == 3)
+			{
+				$vpp = 56; # 14V
+				$progtime = 100;
+				return;
+			}
+		}
+	}
+	&DialogHandler(MSG_ALERT, (sprintf "PES info unknown, check it!", $pos), 0);
+	$erasetime = 0;
+	$progtime = 0;
+	$vpp = 0;
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub WritePES
+{
+	my $byte;
+	my $bitmask;
+
+	if ($galtype == UNKNOWN)
+	{
+		&DialogHandler(MSG_ALERT, (sprintf "WritePES: unknown GAL type, don't know how to write!", $pos), 0);
+		return;
+	}
+
+	if (&TurnOn(WRITEPES) == TRUE)
+	{
+		if(($galtype ==  GAL16V8) || ($galtype == GAL20V8) || ($galtype == ATF16V8B))
+		{
+			usleep(10);
+			&SetRow($galpesrow);
+			for ($byte = 0; $byte < $galpesbytes; $byte++)
+			{
+				for($bitmask = 0x01; $bitmask <= 0x80; $bitmask <<= 1)
+				{
+					&SendBit(($pes[$byte] & $bitmask) ? 1 : 0);
+				}
+			}
+			&SetSDIN(OFF);
+			usleep(10);
+			&Strobe($progtime);
+			usleep(10);
+		}
+		elsif (($galtype == GAL6001) || ($galtype == GAL6002))
+		{
+			&SetRow(0);
+			&SendBits( 20, 0);
+			for ($byte = 0; $byte < $galpesbytes; $byte++)
+			{
+				for ($bitmask = 0x01; $bitmask <= 0x80; $bitmask <<= 1) # bug 2019-02-08
+				{
+					&SendBit(($pes[$byte] & $bitmask) ? 1 : 0);
+				}
+			}
+			if (($galpesbytes * 8) < $galbits)
+			{
+				&SendBits(($galbits - ($galpesbytes * 8)), 0);
+			}
+			&SendBit(ON);
+			&SendAddress(7, $galpesrow);
+			&SendBits(16, 0);
+			&SetSDIN(OFF);
+		}
+		elsif (($galtype == GAL22V10) || ($galtype == ATF22V10B) || ($galtype == ATF22V10C))
+		{
+			&SetRow(0);
+			for ($byte = 0; $byte < $galpesbytes; $byte++)
+			{
+				for ($bitmask = 0x01; $bitmask <= 0x80; $bitmask <<= 1) # bug 2019-02-08
+				{
+					&SendBit(($pes[$byte] & $bitmask) ? 1 : 0);
+				}
+			}
+			if (($galpesbytes * 8) < $galbits)
+			{
+				&SendBits(($galbits - ($galpesbytes * 8)), 0);
+			}
+			&SendAddress(6, $galpesrow);	# bug 2019-02-08
+			&SetSDIN(OFF);
+			&Strobe($progtime);
+		}
+		else
+		{
+			&SetRow(0);
+			usleep(10);
+			for ($byte = 0; $byte < $galpesbytes; $byte++)
+			{
+				for($bitmask = 0x01; $bitmask <= 0x80; $bitmask <<= 1)
+				{
+					SendBit(($pes[$byte] & $bitmask) ? 1 : 0);
+				}
+			}
+			&SetSDIN(OFF);
+			&SendAddress( 6, $galpesrow);
+			usleep(10);
+			&Strobe($progtime);
+			usleep(10);
+		}
+	&TurnOff;
+	}
+}
+		
+#################################################################################################
+#
+#
+#
+#################################################################################################
+# type,id0|id1,name,fuses,pins,rows,bits,uesrow,uesfuse,uesbytes,eraserow,eraseallrow,pesrow,pesbytes,cfgrow,config,cfgbits
+sub FormatJEDEC
+{
+	my $buffer;	
+	my $fuseindex;
+	my $l;
+	my $bit;
+	my $bytes;
+	my $ch;
+
+	&ClrListBox;
+	&ToListBox(sprintf "JEDEC file created on %s", strftime("%a %Y-%m-%d %k:%m:%S", localtime(time)));
+	&ToListBox(sprintf "%c", 0x02);
+	&ToListBox(sprintf "%s", $galname);
+	&ToListBox(sprintf "*QP%d*", $galpins);
+	&ToListBox(sprintf "QF%d*",  $galfuses);
+	&ToListBox(sprintf "QV0*F0*G0*X0*", $galpins, $galfuses);
+
+	if (($galtype == GAL6001) || ($galtype == GAL6002))
+	{
+		for ($bit = $fuseindex = 0; $bit < $galbits; $bit++)
+		{
+			$buffer = sprintf "L%04d ", $fuseindex;
+			for ($bytes = 0; $bytes < 114; $bytes++)
+			{
+				$buffer .= sprintf "%s", ($fuses[$fuseindex++] == 1) ? '1' : '0';
+			}	
+			$buffer .= "*";
+			&ToListBox($buffer);
+		}
+		for ($bit = 0; $bit < 11; $bit++)
+		{
+			$buffer = sprintf "L%04d ", $fuseindex;
+			for ($bytes = 0; $bytes < 78; $bytes++)
+			{
+				$buffer .= sprintf "%s", ($fuses[$fuseindex++] == 1) ? '1' : '0';
+			}	
+			$buffer .= "*";
+			&ToListBox($buffer);
+		}
+	}
+	else
+	{
+# do FUSES
+		for ($bit = $fuseindex = 0; $bit < $galbits; $bit++)
+		{
+			$buffer = sprintf "L%04d ", $fuseindex;
+			for ($bytes = 0; $bytes < $galrows; $bytes++)
+			{
+				$buffer .= sprintf "%s", ($fuses[$fuseindex++] == 1) ? '1' : '0';
+			}
+			$buffer .= "*";
+			&ToListBox($buffer);
+		}
+		if ($fuseindex < $galuesfuse)
+		{
+			$buffer = sprintf "L%04d ", $fuseindex;
+			while ($fuseindex < $galuesfuse)	
+			{
+				$buffer .= sprintf "%s", ($fuses[$fuseindex++] == 1) ? '1' : '0';
+			}
+			$buffer .= "*";
+			&ToListBox($buffer);
+		}
+# do UES
+		$buffer = sprintf "N UES";
+		for ($bytes = 0; $bytes < $galuesbytes; $bytes++)
+		{
+			$ch = 0;
+			for ($bit = 0; $bit < 8; $bit++)
+			{
+				if ($fuses[$fuseindex + (8 * $bytes) + $bit])
+				{
+					if ($galtype == ATF22V10C)
+					{
+						$ch |= (1 << (7 - $bit));				# BIG ENDIAN
+					}
+					else
+					{
+						$ch |= (1 << $bit);						# LITTLE ENDIAN
+					}			
+				}
+			}
+			$buffer .= sprintf " %02X", $ch;				
+		}	
+		$buffer .= "*";
+		&ToListBox($buffer);
+
+		$buffer = sprintf "L%04d ", $fuseindex;
+		for ($bytes = 0; $bytes < ($galuesbytes * 8); $bytes++) ##???
+		{
+				$buffer .= sprintf "%s", ($fuses[$fuseindex++] == 1) ? '1' : '0';
+		}
+		$buffer .= "*";
+		&ToListBox($buffer);
+# remainder
+		if ($fuseindex < $galfuses)
+		{
+			$buffer = sprintf "L%04d ", $fuseindex;
+			while ($fuseindex < $galfuses)
+			{
+				$buffer .= sprintf "%s", ($fuses[$fuseindex++] == 1) ? '1' : '0';
+			}	
+			$buffer .= "*";
+			&ToListBox($buffer);
+		}
+# do PES
+		$buffer = sprintf "N PES";
+		for ($bit = 0; $bit < $galpesbytes; $bit++)
+		{
+			$buffer .= sprintf " %02X", $pes[$bit];
+		}
+		$buffer .= "*";
+		&ToListBox ($buffer);
+		&ToListBox ( sprintf "C%04X*", &CheckSum(\@fuses, $galfuses));
+		&ToListBox ( sprintf "%c", 0x03);
+	}
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub CheckJEDEC
+{
+#print $_[0];
+
+	my $pos = &ParseFuseMap($_[0]);
+	
+	if ($pos == length $_[0])
+	{
+		return TRUE;
+	}
+#printf ("length %d  pos %d \n", length $_[0], $pos);
+	&DialogHandler(MSG_ALERT, (sprintf "Error in JEDEC at position %d", $pos), 0);
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub ParseFuseMap
+{
+	my @fusebuf = split(/|/, $_[0]);
+	my $len = length $_[0];
+	my $i;
+	my $n;
+	my $type;
+	my $oldtype;
+	my $checksumpos = 0;
+	my $address;
+	my $pins = 0;
+	my $lastfuse = 0;
+	my $state = 0;			##  0=outside JEDEC, 1=skipping comment or unknown, 2=read command
+	my $security = 0;
+	my $checksum = 0;
+	my $char;
+
+	for ($n = 0; $n < $len; $n++)
+	{
+		$char = $fusebuf[$n];
+		if ($char eq '*')
+		{
+			$state = 2;
+		}
+		else
+		{
+# pseudo switch
+			if ($state == 2)
+			{
+				if ($char ne ' ')
+				{
+					if ($char eq 'L')
+					{
+						$address = 0;
+						$state = 3; 
+					}
+					elsif ($char eq 'F')
+					{
+						$state = 5;
+					}
+					elsif ($char eq 'Q')
+					{
+						$state = 7;
+					}
+					elsif ($char eq 'C')
+					{
+						$state = 14;
+						$checksumpos = $n;
+						goto BREAK;
+					}
+					else
+					{
+						$state = 1;
+					}
+				}
+				goto BREAK;
+			}
+			elsif ($state == 3)
+			{
+				if ($char =~ m/[^0-9]/)
+				{
+					return $n;
+				}
+				$address = $char - '0';
+				$state = 4;
+				goto BREAK;
+			}
+			elsif ($state == 4)
+			{
+				if ($char eq ' ')
+				{
+					$state = 6;
+				}
+				elsif ($char =~ m/[0-9]/)
+				{
+					$address = 10 * $address + ($char - '0');
+				}
+				else
+				{
+					return $n;
+				}
+				goto BREAK;
+			}
+			elsif ($state == 5)
+			{
+				if ($char eq ' ')
+				{
+					goto BREAK;
+				}
+				if (($char eq '0') || ($char eq '1'))
+				{
+					@fuses = (1) x $galfuses; # empty fusemap
+				}
+				else
+				{
+					return $n;
+				}
+				$state = 1;
+				goto BREAK;
+			}
+			elsif ($state == 6)
+			{
+				if ($char eq ' ')
+				{
+					goto BREAK;
+				}
+				if (($char eq '0') || ($char eq '1'))
+				{
+					$fuses[$address++] = ($char - '0');
+				}
+				else
+				{
+					return $n;
+				}
+				goto BREAK;
+			}
+			elsif ($state == 7)
+			{
+				if ($char eq ' ')
+				{
+					goto BREAK;
+				}
+				if ($char eq 'P')
+				{
+					$pins = 0;
+					$state = 8;
+				}
+				elsif ($char eq 'F')
+				{
+					$lastfuse = 0;
+					$state = 9;
+				}
+				else
+				{
+					$state = 2;
+				}
+				goto BREAK;
+			}
+			elsif ($state == 8)
+			{
+                if ($char eq ' ')
+                {
+                    goto BREAK;
+                }
+				if ($char =~ m/[^0-9]/)
+				{
+					return $n;
+				}	
+				$pins = $char - '0';
+				$state = 10;
+				goto BREAK;
+			}
+			elsif ($state == 9)
+			{
+                if ($char eq ' ')
+                {
+                    goto BREAK;
+                }
+				if ($char =~ m/[^0-9]/)
+				{
+					return $n;
+				}	
+				$lastfuse = $char - '0';
+				$state = 11;
+				goto BREAK;
+			}
+			elsif ($state == 10)
+			{
+				if ($char =~ m/[0-9]/)
+				{
+					$pins = 10 * $pins + ($char - '0');
+				}
+				elsif ($char eq ' ')	
+				{	
+					$state = 12;
+				}
+				else
+				{
+					return $n;
+				}
+				goto BREAK;
+			}
+			elsif ($state == 11)
+			{
+				if ($char =~ m/[0-9]/)
+				{
+					$lastfuse = 10 * $lastfuse + ($char - '0');
+				}
+				elsif ($char eq ' ')
+				{
+					$state = 12;
+				}
+				else
+				{
+					return $n;
+				}
+				goto BREAK;
+			}
+			elsif ($state == 12)
+			{
+                if ($char ne ' ')
+                {
+					return $n;
+				}
+				goto BREAK;
+			}
+			elsif ($state == 13)
+			{
+				if ($char eq ' ')
+				{
+					goto BREAK;
+				}
+				if (($char eq '0') || ($char eq '1'))
+				{
+					$security = ($char - '0');
+				}
+				else
+				{
+					return $n;
+				}
+				$state = 1;
+				goto BREAK;
+			}
+			elsif ($state == 14)
+			{
+				if ($char eq ' ')
+				{
+					goto BREAK;
+				}
+				if ($char =~ m/[0-9]/)
+				{
+					$checksum = $char - '0';
+				}
+				elsif(((uc $char) gt 'A') && ((uc $char) le 'F'))
+				{
+					$checksum = ((uc $char) - 'A' + 10);
+				}
+				else
+				{
+					return $n;
+				}
+				$state = 15;
+				goto BREAK;
+	
+			}
+			elsif ($state == 15)
+			{
+				if ($char =~ m/[0-9]/)
+				{
+					$checksum = 16 * $checksum + ($char - '0');
+				}
+				elsif(((uc $char) gt 'A') && ((uc $char) le 'F'))
+				{
+					$checksum = (16 * $checksum) + ((ord (uc $char) - 0x41) + 10);
+				}
+				elsif ($char eq ' ')
+				{
+					$state = 2;
+				}
+				else
+				{
+					return $n;
+				}
+				goto BREAK;
+			}
+BREAK:
+		}
+	}
+	if (($lastfuse) || ($pins))
+	{
+		if(($checksum) && ($checksum != &CheckSum(\@fuses, $lastfuse)))
+		{
+			if (&DialogHandler(MSG_WARNING, ("Checksum given %04X calculated %04X", $checksum,  &CheckSum(\@fuses, $lastfuse)), 0)  == FALSE)
+			{
+				return $checksumpos;
+			}
+		}
+		$type = 0;
+		$oldtype = $galtype;
+		for ($i = 1; $i < keys %galinfo; $i++)
+   	 	{
+			&SetGalParms($i);
+			if ((($lastfuse == 0) || ($galfuses == $lastfuse) || (($galuesfuse == $lastfuse) && ($galuesfuse + 8 * $galuesbytes) == $galfuses))
+			&& (($pins == 0) || ($galpins == $pins) || ($galpins == 24) && ($pins == 28)) )
+			{
+				if ($galtype == UNKNOWN)
+				{
+					$type = $i;
+					goto BREAK2;
+				}
+				elsif (!$type)
+				{
+					$type = $i;
+					goto BREAK2;
+				}
+			}
+		}
+BREAK2:
+		if ($oldtype != $type)
+		{
+			$galtype = $type;
+			&SetGalParms($type);
+			&DialogHandler(MSG_ALERT,  "galtype has changed!! ", 0);
+		}
+	}
+	return $n;
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+# Checksum(array, count) fuses
+sub CheckSum
+{
+	my @array = @{$_[0]};
+	my $count = $_[1];
+	my $sum = 0;
+	my $byte = 0;
+	my $mask = 1;
+
+	for ($i = 0; $i < $count; $i++)
+	{
+		if ($array[$i] == 1)
+		{
+			$byte |= $mask;
+		}
+		$mask = $mask << 1;
+		if ($mask > 255)
+		{
+			$sum += $byte;
+			$byte = 0;
+			$mask = 1;
+		}
+	}	
+	return ($byte + $sum) & 0xFFFF;
+}
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub WriteGAL
+{
+	my @array = @{$_[0]};
+	my $row;
+	my $bit;
+
+	if (&TurnOn(WRITEGAL))
+	{
+            if(($galtype ==  GAL16V8) || ($galtype == GAL20V8))
+            {	
+                    # write fuse rows
+                    for ($row = 0; $row < $galrows; $row++)
+                    {
+                            &SetRow($row);
+                            for ($bit = 0; $bit < $galbits; $bit++)
+                            {
+                                &SendBit (($array[$galrows * $bit + $row]) ? 1 : 0);
+                            }
+                            &Strobe($progtime);
+                    }
+                    # write UES
+                    &SetRow($galuesrow);
+                    for ($bit = 0; $bit < $galuesbytes * 8; $bit++)
+                    {
+                            &SendBit(($array[$galuesfuse + $bit]) ? 1 : 0);
+                    }
+                    &Strobe($progtime);
+                    # write CFG
+                    &SetRow($galcfgrow);
+                    for ($bit = 0; $bit <  $#{$galconfig}+1 ; $bit++)
+                    {
+                            if ($pes[2] == 0x1A)
+                            {
+                                    &SendBit(($array[$cfg16V8AB[$bit]]) ? 1 : 0);
+                            }
+                            elsif ($pes[2] == 0x20)
+                            {
+                                    &SendBit(($array[$cfg20V8[$bit]]) ? 1 : 0);
+                            }
+                            elsif ($pes[2] == 0x3A)
+                            {
+                                    &SendBit(($array[$cfg20V8AB[$bit]]) ? 1 : 0);
+                            }
+                            else
+                            {
+                                    # pes[2] = 0 or pes[2] is invalid
+                                    &SendBit(($array[$cfg16V8[$bit]]) ? 1 : 0);
+                            }
+                    }
+                    &Strobe($progtime);
+            }	
+            elsif (($galtype == GAL6001) || ($galtype == GAL6002))
+            {
+                    &SetRow(0);
+                    for ($row = 0; $row < 78; $row++)
+                    {
+                            &SendBits(20, 0);
+                            for ($bit = 0; $bit < 11 ; $bit++)
+                            {
+                                    &SendBit( $array[7296 + 78 * $bit + $row] );
+                            }
+                            for ($bit = 0; $bit < 64 ; $bit++)
+                            {
+                                    &SendBit(($array[114 * $bit + $row]) ? 1 : 0);
+                            }
+                            &SendBit(1);
+                            &SendAddress(7, $row);
+                            &SendBits(16, 0);
+                            &SetSDIN(OFF);
+                            &Strobe($progtime);
+                    }
+                    for ($row = 0; $row < 64; $row++)
+                    {
+                            for ($bit = 0; $bit < 20; $bit++)
+                            {
+                                    &SendBit (($array[78 + 114 * $row + $bit]) ? 1 : 0);
+                            }
+                            &DiscardBits(83);
+                            for ($bit = 0; $bit < 16; $bit++)
+                            {
+                                    &SendBit (($array[98 + 114 * $row + $bit]) ? 1 : 0);
+                            }
+                    }
+                    # write UES
+                    &SetRow($galuesrow);
+                    &DiscardBits(20);
+                    for ($bit = 0; $bit < 72; $bit++)
+                    {
+                            &SendBit (($array[$galuesbits + $bit]) ? 1 : 0);
+                    }
+                    # write CFG
+                    &SetRow($galcfgrow);
+                    &Strobe(2);
+                    for ($bit = 0; $bit < $#{$galconfig}+1; $bit++)
+                    {
+                            &SendBit (($array[@{$galconfig}[$bit]]) ? 1 : 0);
+                    }
+            }
+            elsif ($galtype == ATF16V8B)
+            {
+                    for ($row = 0; $row < $galrows; $row++)
+                    {
+                            &SetRow($row);
+                            for ($bit = 0; $ bit < $galbits; $bit++)
+                            {
+                                    &SendBit(($array[$galrows * $bit + $row]) ? 1 : 0);
+                            }
+                            &Strobe($progtime);
+                    }
+                    # write UES STF16V8
+                    &SetRow($galuesrow);
+                    for ($bit = 0; $bit < $galuesbytes * 8; $bit++)
+                    {
+                            &SendBit(($array[$galuesfuse + $bit]) ? 1 : 0);
+                    }
+                    &Strobe($progtime);
+                    # write CFG ATF16V8
+                    &SetRow($galcfgrow);
+                    for ($bit = 0; $bit < $#{$galconfig} + 1; $bit++)
+                    {
+                    	&SendBit(($array[@{$galconfig}[$bit]]) ? 1 : 0);
+                    }
+                    &Strobe($progtime);
+            }
+            elsif (($galtype ==  GAL22V10) || ($galtype == ATF22V10B))
+            {
+				&SetRow(0);			# RA0...RA5 low
+				for ($row = 0; $row < $galrows; $row++)
+				{
+					for ($bit = 0; $bit < $galbits; $bit++)
+					{
+                       &SendBit (($array[$galrows * $bit + $row]) ? 1 : 0);
+					}
+					&SendAddress(6, $row);
+					&SetSDIN(OFF);
+					&Strobe($progtime);
+				}
+				# write UES
+				if ($galtype == ATF22V10B)
+				{
+					&SendBits(68, 1);
+					for ($bit = 0; $bit < ($galuesbytes * 8) ; $bit++)
+					{
+						&SendBit(($array[$galuesfuse + $bit]) ? 1 : 0);
+					}
+				}	
+				else
+				{
+					for ($bit = 0; $bit < ($galuesbytes * 8) ; $bit++)
+					{
+						&SendBit(($array[$galuesfuse + $bit]) ? 1 : 0);
+					}
+					if (($galuesbytes * 8) < $galbits)
+					{
+						&SendBits($galbits - ($galuesbytes * 8), 0);
+					}
+				}
+				&SendAddress(6, $galuesrow);
+				&SetSDIN(OFF);
+				&Strobe($progtime);
+				# write CFG
+				&SetRow($galcfgrow);
+				for ($bit = 0; $bit < $#{$galconfig} + 1; $bit++)
+				{
+					&SendBit(($array[@{$galconfig}[$bit]]) ? 1 : 0);
+				}
+				&SetSDIN(OFF);
+				&Strobe($progtime);
+            }
+ 			elsif ($galtype == ATF22V10C)
+			{
+				&SetRow(0);
+				for ($row = 0; $row < $galrows; $row++)
+				{
+					for ($bit = 0; $bit < $galbits; $bit++)
+					{
+						&SendBit(($array[$galrows * $bit + $row]) ? 1 : 0);
+					}
+					&SendAddress( 6, $row);
+					&SetPV(ON);
+					&Strobe($progtime);
+					&SetPV(OFF);
+				}
+				# write UES
+				&SendBits(68, 1);
+				for ($bit = 0; $bit < ($galuesbytes * 8); $bit++)
+				{
+					&SendBit(($array[$galuesfuse + $bit]) ? 1 : 0);
+				}
+                &SendAddress( 6, $row);
+                &SetPV(ON);
+                &Strobe($progtime);
+                &SetPV(OFF);
+				# write CFG
+				&SetRow($galcfgrow);	
+				for ($bit = 0; $bit < 19; $bit++)
+				{
+					&SendBit(($array[@{$galconfig}[$bit]]) ? 1 : 0);
+				}
+				&SetSDIN($array[@{$galconfig}[19]]);
+                &SetPV(ON);
+                &Strobe($progtime);
+                &SetPV(OFF);
+				# disable power-down feature
+				&SetRow(0);
+				&SendAddress(6, 59);
+                &SetPV(ON);
+                &Strobe($progtime);
+                &SetPV(OFF)
+			}
+			else # default
+			{
+				&SetRow(0);
+				for ($row = 0; $row < $galrows; $row++)
+				{
+					for ($bit = 0; $bit < $galbits; $bit++)
+					{
+                        &SendBit (($array[$galrows * $bit + $row]) ? 1 : 0);
+					}
+					&SendAddress(6, $row);
+					&SetSDIN(OFF);
+					&Strobe($progtime);
+				}
+				# UES
+				for ($bit = 0; $bit < ($galuesbytes * 8); $bit++)
+				{
+					&SendBit(($array[$galuesfuse + $bit]) ? 1 : 0);
+				}
+				if (($galuesbytes * 8) < $galbits)
+				{
+					&SendBits($galbits - ($galuesbytes * 8), 0);
+				}
+				&SendAddress (6, $galuesrow);
+				&SetSDIN(OFF);
+				&Strobe($progtime);
+				# CFG	
+				&SetRow($galcfgrow);
+				for ($bit = 0; $bit < $#{$galconfig} + 1; $bit++)
+				{
+					&SendBit (($array[@{$galconfig}[$bit]]) ? 1 : 0);
+				}
+				&SetSDIN(OFF);
+				&Strobe($progtime);
+			}
+            &TurnOff;
+	}
+	return ;
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub EraseGAL
+{
+    if (&TurnOn(ERASEGAL))
+	{
+    	&SetRow($galeraserow);
+    	if (($galtype ==  GAL16V8) || ($galtype == ATF16V8B) || ($galtype == GAL20V8))
+    	{
+        	&SendBit(1);
+    	}
+    	&Strobe($erasetime);
+    	&TurnOff;
+	}
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub EraseALL
+{
+    if (&TurnOn(ERASEALL))
+	{
+    	&SetRow($galeraseallrow);
+    	if(($galtype ==  GAL16V8) || ($galtype == ATF16V8B) || ($galtype == GAL20V8))
+    	{
+        	&SendBit(1);
+    	}
+    	&Strobe($erasetime);
+    	&TurnOff;
+	}
+}
+
+##############################################################################################
+#
+#
+#
+##############################################################################################
+sub BurnSECURITY
+{
+	if (&TurnOn(BURNSECURITY))
+	{
+		if (($galtype == GAL16V8) || ($galtype == GAL20V8) || ($galtype == ATF16V8B))
+		{
+			&SetRow(61);
+			&SendBit(1);
+		}
+		elsif (($galtype == GAL6001) || ($galtype == GAL6002))
+		{
+			&SetRow(0);
+			&SendBits(20 + 11 + 64, 0);
+			&SendBit(1);
+			&SendAddress(7, 98);
+			&SendBits(16, 0);
+			&SetSDIN(OFF);
+		}
+		else
+		{
+			&SetRow(0);
+			if ($galtype == GAL18V10)
+			{
+				&SendBits(96, 0);
+			}
+			elsif ($galtype == GAL20RA10)
+			{
+				&SendBits(80, 0);
+			}
+			elsif ($galtype == GAL20XV10)
+			{
+				&SendBits(40, 0);
+			}
+			elsif (($galtype == GAL22V10) || ($galtype == ATF22V10B) || ($galtype == ATF22V10C))
+			{
+				&SendBits(132, 0);
+			}
+			elsif ($galtype == GAL26CV12)
+			{
+				&SendBits(122, 0);
+			}
+			&SendAddress(6, 61);
+			&SetSDIN(OFF);
+		}
+		&Strobe($progtime);
+		&TurnOff;
+	}	
+}
+
+##############################################################################################
+#
+#
+#
+##############################################################################################
+sub StrobeRow
+{
+	my $row = $_[0];
+
+	if(($galtype ==  GAL16V8) || ($galtype == GAL20V8) || ($galtype == ATF16V8B))
+	{
+		&SetRow($row);
+	}
+	elsif (($galtype == GAL6001) || ($galtype == GAL6002))
+	{
+		&SetRow(0);
+		&SendBits(95,0);
+		&SendBit(1);
+		&SendAddress(7, $row);
+		&SendBits(16);
+	}
+	elsif (($galtype ==  GAL22V10) || ($galtype == ATF22V10B) || ($galtype == ATF22V10C))
+	{
+		&SetRow(0);
+		&SendAddress(6, $_[0]);
+		&SetSTB(ON);
+		&SetSTB(OFF);
+		&SetSDIN(OFF);
+		return;
+	}
+	else
+	{
+		&SetRow(0);
+		&SendBits($galbits, 0);
+		&SendAddress(6, $row);
+	}
+	&Strobe(2);
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub ReceiveBit
+{
+# clock bit in from SDOUT
+	&SetSDIN(OFF);
+	usleep(10);
+    my $bit = &GetSDOUT();
+    &SetSCLK(ON);
+	usleep(10);
+   	&SetSCLK(OFF);
+	usleep(10);
+#print "bit: $bit\n";
+    return ($bit == TRUE) ? 1 : 0;
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub GetSDOUT
+{
+	return &GetACK;		# ack is output from DUT
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub SendBit
+{
+	&SetSDIN(($_[0]) ? ON : OFF); # (bit)
+	usleep(10);
+	&SetSCLK(ON);
+	usleep(10);
+	&SetSCLK(OFF);
+	usleep(10);
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub SendBits
+{
+	my $count = $_[0];		# (n, bit)
+	my $bit   = $_[1];
+
+	while($count--)
+	{
+		&SendBit($bit);
+	}
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub DiscardBits
+{
+	my $count = $_[0];		# (n)
+
+	while($count--)
+	{
+		&ReceiveBit;		# throw away data
+	}
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub SendAddress
+{
+	my $count = $_[0];		# (n, row)
+	my $row = $_[1];
+
+	if ($galtype == ATF22V10C)	# /* ATF22V10C MSb first, other 22V10 LSb first */
+	{
+		while ($count-- > 1)
+		{
+			&SendBit(($row & 32) ? 1 : 0);
+			$row <<= 1;
+		}
+		&SetSDIN(($row & 32) ? ON : OFF);
+	}
+	else
+	{
+		while ($count-- > 0)
+		{
+			&SendBit(($row & 1) ? 1 : 0);
+			$row >>= 1;
+		}
+		&SetSDIN(OFF);
+	}
+}	
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub Delay
+{
+	my $msec = $_[0];
+
+	usleep($msec * 1000);
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub Strobe()
+{
+    &Delay(1);
+    &SetSTB(ON);
+    &Delay($_[0]);
+    &SetSTB(OFF);
+    &Delay(1);
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub SetSTB
+{
+    SetSTROBE($_[0]);	# ON / OFF
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub CheckHexEntry
+{
+ 	my ($val) = @_;
+    my $b_valid = ($val =~ /^[0-9A-F]{1,2}$/i)? 1: 0;
+
+	return $b_valid;
+}
+
+########################################################################################################
+#
+# load JEDEC file
+#
+########################################################################################################
+sub LoadFile
+{
+	my $types = [
+	  ['JEDEC Files',       ['.jed', '.JED']],
+	  ['All Files',        '*',             ],
+	];
+
+	my $file = $mw->getOpenFile(-filetypes => $types, -defaultextension => ".JED" );
+	if (defined $file)
+	{
+		return &ProcessLoadFile($file);
+	}
+	else
+	{
+		return -1;
+	} 
+}
+
+########################################################################################################
+#
+# save JEDEC file
+#
+########################################################################################################
+sub SaveFile
+{
+	my $types = [
+	  ['JEDEC Files',       ['.jed', '.JED']],
+	  ['All Files',        '*',             ],
+	];
+
+	my $file = $mw->getSaveFile(-filetypes => $types, -defaultextension => ".JED" );
+	&ProcessSaveFile($file) if defined $file;
+}
+
+########################################################################################################
+#
+# load PES from file
+#
+########################################################################################################
+sub LoadPESFile
+{
+	my $types = [
+	  ['PES Files',       ['.pes', '.PES']],
+	  ['All Files',        '*',             ],
+	];
+
+	my $file = $mw->getOpenFile(-filetypes => $types, -defaultextension => ".PES" );
+	&ProcessLoadPESFile($file) if defined $file;
+}
+
+########################################################################################################
+#
+# load PES from file
+#
+########################################################################################################
+sub SavePESFile
+{
+	my $types = [
+	  ['PES Files',       ['.pes', '.PES']],
+	  ['All Files',        '*',             ],
+	];
+
+	my $file = $mw->getSaveFile(-filetypes => $types, -defaultextension => ".PES" );
+	return &ProcessSavePESFile($file) if defined $file;
+}
+
+#################################################################################################
+#
+# Load a JEDEC file
+#
+#################################################################################################
+sub ProcessLoadFile
+{
+	my $filename = $_[0];
+	my @filebuf;
+	my $fusedata;
+	my $i;
+	my $ptr;
+	my $fcflag = 0;
+	my $loadchecksum = 0;
+	my $filechecksum = 0;
+	my $listboxline;
+
+	my $oldslurp = $/;
+	local ($/); # slurp mode
+
+	&ClrListBox;	
+	open (JEDECIN, "<", $filename) || &DialogHandler(MSG_ALERT," File not found!" , 0);
+# first RAW read for FILE checksum
+	while(<JEDECIN>)
+	{
+		@filebuf = split ('|', $_); ##unpack "a1" x (length( $_ ) /1 ), $_;
+		for ($i = 0; $i < $#filebuf; $i++)
+		{
+			if (ord $filebuf[$i] == 0x02)
+			{
+				$fcflag = 1;
+			}
+			if ($fcflag == 1)
+			{
+				$loadchecksum += ord $filebuf[$i];
+				$loadchecksum &= 0xFFFF;				# max 65535
+			}
+			if (ord $filebuf[$i] == 0x03)
+			{
+				$fcflag = 0;
+			}
+		}
+	}
+# now normal read to process data
+	$/ = $oldslurp;
+	seek JEDECIN, 0,0 ;			# REWIND FILE
+	# now in normal mode	
+	while(<JEDECIN>)
+	{
+		chomp;
+		$_ =~ s/[\r\n]//g;	# remove EOL
+		$fusedata .= $_;
+# display
+		&ToListBox($_);	
+	}		
+	close JEDECIN;
+#
+# $fusedata now holds the clean file info, now remove everything outside STX and ETX
+#
+	$ptr = index($fusedata, chr(0x02));
+	if ($ptr < 0)
+	{
+		 &DialogHandler(MSG_ALERT,"Error in File, can't locate STX",0);
+		 return;
+	}
+	else
+	{
+		$fusedata = substr($fusedata, $ptr+1);				# cut everything before and including STX
+	}
+
+	$ptr = index($fusedata, chr(0x03));
+	if ($ptr < 0)
+	{
+		 &DialogHandler(MSG_ALERT,"Error in File, can't locate ETX",0);
+		 return;
+	}
+	else
+	{
+		$filechecksum = substr($fusedata, $ptr + 1, 4);			# grab file checksum here
+		$fusedata = substr($fusedata, 0, $ptr);				# drop everything after and including ETX
+	}
+	@ffuses = split(/|/, $fusedata);	
+##	&CheckJEDEC ($fusedata);
+	&CheckJEDEC ($fusedata);
+	# accept files where filechecksum has been declared 0000
+	return (hex($filechecksum) == 0) ? 0 : hex($filechecksum)-$loadchecksum;		 
+}
+
+#################################################################################################
+#
+# Save a JEDEC file
+#
+#################################################################################################
+sub ProcessSaveFile
+{
+	my $filename = $_[0];
+	my @elements = $blg->get(0, 'end');
+	my $filechecksum = 0;
+	my $checksumon = 0;
+	my $characters;
+	my $i;
+
+	if ($#elements != -1)
+	{
+		open (JEDECOUT, ">", $filename) || &DialogHandler(MSG_ALERT, "Could not open outputfile!", 0); 
+
+		foreach $line (@elements)
+		{
+			@characters = split (/|/, $line);
+			for ($i = 0; $i < $#characters + 1; $i++)
+			{
+				if (($checksumon == 0) && (ord $characters[$i] == 2 ))  # STX
+				{
+					$checksumon = 1;
+				}	
+				elsif (($checksumon == 1) && (ord $characters[$i] == 3)) #ETX
+				{
+					$checksumon = 2;
+				}	
+				printf JEDECOUT "%s", $characters[$i];
+				if ($checksumon != 0)
+				{
+					$filechecksum += ord $characters[$i];
+				}
+				elsif ($checksumon == 2)
+				{
+					$checksumon = 0;
+					printf JEDECOUT "%04X", $filechecksum;
+					$i += 4;										# skip over possible existing checksum from prev load
+				}
+				$filechecksum &= 0xffff;
+			}
+			printf JEDECOUT "\r\n";		
+			if ($checksumon == 1)
+			{
+				$filechecksum += ord "\r";
+				$filechecksum += ord "\n";
+			}
+		}	
+		close JEDECOUT;
+	}
+	else
+	{
+		&DialogHandler(MSG_ALERT, "No data to write!, nothing done", 0);
+	}
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub ProcessLoadPESFile
+{
+	my $filename = $_[0];
+	my $line;
+	my $fh;
+	my $i;
+
+	if (!open($fh, "<", $filename))
+	{
+		&DialogHandler(MSG_ALERT, "Can't open file: $filename", 0); 
+		return;
+	}
+	$line = <$fh>;
+	close $fh;
+
+	$line =~ s/[\r\n]//g;	# remove EOL chars
+	if (length $line != 16)			# 8 HEX character sets
+	{
+		&DialogHandler(MSG_ALERT,"PES File has not correct size!", 0);
+		return;
+	}
+	if (&CheckHexEntry(split(/|/,$line)))
+	{
+		for ($i =0; $i <8; $i++)
+		{
+			@pes[$i] =  hex( substr($line,$i*2, 2));
+		}
+	}
+	else
+	{
+		&DialogHandler(MSG_ALERT,"PES File has non HEX characters!", 0);
+		return;
+	}
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub ProcessSavePESFile
+{
+	my $filename = $_[0];
+	my $fh;
+	my $i;
+
+    if (!open($fh, ">", $filename))
+    {   
+        &DialogHandler(MSG_ALERT, "Can't open file: $filename", 0);
+        return;
+    }
+
+	for ($i = 0; $i < 8 ; $i++)
+	{
+		printf $fh "%02X", $pes[$i];
+	}
+	printf $fh "\n";
+
+	close $fh;
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+# turn on DUT
+sub TurnOn
+{
+	my $mode = $_[0];				# function
+	my $writeorerase = FALSE;
+
+#print "TO: vpp= $vpp\n";
+
+	if (($mode == WRITEGAL) || ($mode == ERASEGAL) || ($mode == ERASEALL) 
+	|| ($mode == BURNSECURITY) || ($mode == WRITEPES) || ($mode == VPPTEST))
+	{
+		if  (&DialogHandler(MSG_ASSURE, "Write DUT", $mode) == FALSE)
+		{
+			return FALSE;
+		}
+		else
+		{
+			$writeorerase = TRUE;
+		}
+	}		
+
+#print "TO2: vpp= $vpp\n";
+	
+	&SetVPP(0);		# VPP off		
+	&SetPV(OFF);	# P/V- low	resistor will correct for levels
+	&SetRow(0x3f);	# RA0-5 High
+	&SetVCC($galvcc);# turn on VCC
+	&SetSDIN(OFF);	# SDIN high
+	&SetSCLK(OFF);	# SCLK low
+	&SetSTB(OFF);	# STB high, outputs to H
+	&Delay(100);
+	&SetVPP(($writeorerase == TRUE) ? $vpp : $read12v);
+
+	if ($writeorerase == TRUE)
+	{
+		&SetPV(ON);		# P/V- is to O1, 
+		&Delay(10);
+	}
+	return TRUE;		# true
+}
+
+#################################################################################################
+#
+# unpower the DUT
+#
+#################################################################################################
+# turn off DUT
+sub TurnOff
+{
+	&Delay(10);
+	&SetPV(OFF);		# P/V- LOW = verify
+	&SetRow(0x3F);		# RA0-5 HIGH
+	&SetSDIN(OFF);		# SDIN High
+	&SetVPP(0);			# VPP off 
+	&Delay(2);
+	&SetVCC(0);			# turn off VCC
+}
+	
+#################################################################################################
+#
+#
+#
+#################################################################################################
+# set P/V- signal level
+sub SetPV
+{
+	&SetSEL($_[0]);		# ON / OFF
+}
+
+#================================================================================================
+#
+# Dialogs and other User interaction
+#
+# message types MSG_OK MSG_ALERT MSG_WARNING MSG_ASSURE
+# mode types READGAL READPES VERIFYGAL SCLKTEST WRITEGAL ERASEGAL ERASEALL CHECKBURNSEC BURNSECURITY WRITEPES VPPTEST TESTGAL
+#================================================================================================
+sub DialogHandler
+{
+	my $msgfunc = $_[0];
+	my $title = $_[1];
+	my $mode = $_[2];
+	my $testval = -1;
+	my $textrow1;
+	my $textrow2;
+	my $textrow3;
+	my $auxtext = "";
+	my $temptext;
+	my $lbuttontext = "OK";
+	my $rbuttontext = "Cancel";
+	my $i;
+	my @lpes = (0,0,0,0,0,0,0,0);
+
+#print "msgfunc: $msgfunc mode: $mode\n";
+# fixed size and default buttons
+	
+	my $dw = $mw->Toplevel(
+			-title => $title,
+			);
+
+	my $can = $dw->Button (
+			-text => $rbuttontext,
+			-width => 10,
+			-command => sub { $testval = 0; $dw->withdraw() },
+	)->pack(-side => 'right', -anchor => 's');
+
+	$dwb1 = $dw->Button (
+			-text => $lbuttontext,
+			-width => 10,
+			-command => sub { $testval = 1; $dw->withdraw() },
+	)->pack(-side => 'right', -anchor => 's');
+
+	$dwl1 = $dw->Label(
+			-text => $textrow1,
+			-just => 'left',
+	)->place(-x => 0, -y => 5);
+#-----------------------------------------------------------------------------------------------------
+#	
+# Declare UI layout for Dialogs, show settings and allow for to edit (some)
+#
+#-----------------------------------------------------------------------------------------------------
+	if ($msgfunc == MSG_ASSURE)
+	{
+		$dwl2 = $dw->Label(
+				-text => $textrow2,
+				)->place(-x => 0, -y => 25);
+#
+		$dwl3 = $dw->Label(
+				-text => $textrow3,
+				)->place(-x => 0, -y => 45);
+#
+# variable items
+#
+		$dw->geometry('400x150'); # textrow1 / textrow3 / vpp:prog setting /buttons
+
+		$dwb1->configure(-text => $lbuttontext);
+
+		if (($mode == CHECKPES) || ($mode == WRITEPES) || ($mode == WRITEGAL) ||($mode == ERASEGAL) || ($mode == ERASEALL))
+		{
+			&ParsePES;
+			for ($i = 0; $i <= $#pes; $i++)
+			{
+				$lpes[$i] = sprintf "%02X",  $pes[$i];
+			}
+		}	
+
+		if (($mode == WRITEPES) || ($mode == WRITEGAL) || ($mode == ERASEGAL) || ($mode == ERASEALL) || ($mode == BURNSECURITY))
+		{
+			$dle1 = $dw->LabEntry(
+					-textvariable => \$vppf,
+					-label	=> 'VPP: ',
+					-labelPack => [-side => 'left', -anchor => 'w'],
+					-width => 5,
+					-bg => 'white',	
+					-font => ['courier', '12', 'bold'],
+					)->place(-x => 0, -y => 70);
+
+			$dle2 = $dw->LabEntry(
+					-textvariable => \$progf,
+					-label	=> 'Prog-Pulse  ',
+					-labelPack => [-side => 'left', -anchor => 'w'],
+					-width => 3,
+					-bg => 'white',	
+					-font => ['courier', '12', 'bold'],
+					)->place(-x => 160, -y => 70);
+		}
+		$dwl4 = $dw->Label(
+				-font => ['courier', '12', 'bold'],
+				-text => $auxtext,
+		)->place (-x => 0, -y => 90);
+
+		if ($mode == CHECKPES)
+		{
+			$dw->geometry('400x100');
+		
+			$lbuttontext = "Write PES";
+			$dwb1->configure(-text => $lbuttontext);
+
+			for ($i = 0 ; $i <8; $i++)
+			{
+				my $wname = sprintf "\$de%1d", $i;
+				$wname = $dw->LabEntry(
+					-width => 2,
+#					-textvariable => $lpes[$i],
+					-font => ['courier', '12', 'bold'],
+					-bg => 'white',
+					-validatecommand => \&CheckHexEntry,
+					-validate => 'key',
+					)->place(-x => $i * 24, -y => 20);
+				$wname->configure(-textvariable => \$lpes[$i]);
+			}
+		}
+	}
+#-----------------------------------------------------------------------------------------------------
+#
+# show a simple message to the user, return on buttonpress
+#
+#-----------------------------------------------------------------------------------------------------
+	elsif ($msgfunc == MSG_ALERT)
+	{
+		$dw->geometry('400x50');
+		
+		$textrow1 = $title;
+		$can->destroy();
+		$dwl1->configure(-text => $textrow1);
+	}
+#-----------------------------------------------------------------------------------------------------
+#
+# show warning, user can preceed or abort
+#
+#-----------------------------------------------------------------------------------------------------
+	elsif ($msgfunc == MSG_WARNING)
+	{
+		$dw->geometry('700x50');
+		$textrow1 = $title;
+		$dwl1->configure(-text => $textrow1);
+
+		if (($mode == TESTGAL) || ($mode == CHECKBURNSEC))
+		{
+			$lbuttontext = "Yes";
+			$rbuttontext = "No";
+			$can->configure(-text => $rbuttontext);
+			$dwb1->configure(-text => $lbuttontext);
+		}
+	}
+#
+# initial contents
+#
+	if (($mode == CHECKPES) || ($mode == WRITEPES) || ($mode == WRITEGAL) ||($mode == ERASEGAL) || ($mode == ERASEALL) || ($mode == BURNSECURITY))
+	{
+		if (hex($lpes[3]) == $LATTICE)
+		{
+			$temptext = "Lattice";
+		}
+		elsif (hex($lpes[3]) == $NATIONAL)
+		{
+			$temptext = "National";
+		}
+		elsif (hex($lpes[3]) == $SGSTHOMSON)
+		{
+			$temptext = "ST";
+		}
+		else
+		{
+			$temptext = "Unknown";
+		}
+	}
+
+	if ($mode == CHECKPES)
+	{
+		$textrow1 = sprintf "B1  B2  B3  B4  D1  D2  D3  D4";
+		$dwl1->configure(-text => $textrow1, -just => 'left');
+		$textrow3 = sprintf "VPP=%2.2f Prog-Pulse=%dmS Erase-Pulse=%dmS", $vpp/4.0, $progtime, $erasetime;	
+		$dwl3->configure(-text => $textrow3);
+	}
+	elsif (($mode == WRITEPES) || ($mode == WRITEGAL) || ($mode == ERASEGAL) || ($mode == ERASEALL) || ($mode == BURNSECURITY))
+	{
+      	$textrow1 = sprintf "%s %s %s", ($pes[1] & 0x10)?"3.3V":"5.0V", $temptext, @{$galinfo{$galtype}}[3];
+      	$dwl1->configure(-text => $textrow1);
+		$textrow2 = sprintf "PES: %02s %02s %02s %02s %02s %02s %02s %02s", $lpes[0],$lpes[1],$lpes[2],$lpes[3],$lpes[4],$lpes[5],$lpes[6],$lpes[7];	
+		$dwl2->configure(-text => $textrow2);
+		$textrow3 = sprintf "VPP=%2.2f Prog-Pulse=%dmS Erase-Pulse=%dmS", $vpp/4.0, $progtime, $erasetime;	
+		$dwl3->configure(-text => $textrow3);
+		$vppf = sprintf "%2.2f", $vpp / 4.0;
+		$dle1->configure(-text => $vppf);
+		if (($mode == WRITEPES) || ($mode == WRITEGAL) || ($mode == BURNSECURITY))
+		{
+			$progf = sprintf "%3d", $progtime;
+		}
+		elsif (($mode == ERASEGAL) || ($mode == ERASEALL))
+		{
+			$dle2->configure(-label => 'Erase-Pulse');
+			$progf = sprintf "%3d", $erasetime;
+		}
+		else
+		{
+			$progf = "XXX";
+		}
+		$dle2->configure(-text => $progf);
+	}
+
+	if ($mode == WRITEGAL)
+	{
+		$lbuttontext = "Write GAL";
+		$dwb1->configure(-text => $lbuttontext);
+	}
+
+	if ($mode == ERASEGAL)
+	{
+		$auxtext = "*** Erase GAL ***";
+		$dwl4->configure(-text => $auxtext);
+		$lbuttontext = "Erase GAL";
+		$dwb1->configure(-text => $lbuttontext);
+	}
+	elsif ($mode == ERASEALL)
+	{
+		$auxtext = "*** Erase WHOLE GAL, including PES! ***";
+		$dwl4->configure(-text => $auxtext);
+		$lbuttontext = "Erase ALL";
+		$dwb1->configure(-text => $lbuttontext);
+	}
+
+#
+# wait user response here and update everything in the while
+#
+	&KeysOff;
+
+#
+# wait until use presses button
+#
+	while($testval < 0){
+		$mw->update;
+
+		if (hex($lpes[3]) == $LATTICE)
+		{
+			$temptext = "Lattice";
+		}
+		elsif (hex($lpes[3]) == $NATIONAL)
+		{
+			$temptext = "National";
+		}
+		elsif (hex($lpes[3]) == $SGSTHOMSON)
+		{
+			$temptext = "ST";
+		}
+		else
+		{
+			$temptext = "Unknown";
+		}
+		usleep(10000);
+	}
+
+	if ($testval == 1)
+	{
+		if ($mode == CHECKPES)
+		{
+			for ($i = 0; $i < 8 ; $i++)
+			{
+				$pes[$i] = hex($lpes[$i]);
+			}
+		}
+	}
+	&KeysOn;
+# on success copy the data
+	return ($testval == 1) ? TRUE : FALSE;
+}
+
+#================================================================================================
+#
+# all functions that interact directly with the port hardware
+#
+#================================================================================================
+
+#################################################################################################
+#
+# set VCC voltage 0.0, 3.3 or 5.0 V
+#
+#################################################################################################
+sub SetVCC
+{
+	my $setting = $_[0];			# parameter that represents the desired voltage
+	my $portdata;
+##!#print "VCC: $setting \n";
+
+# for the CSGBLAST hardware uncomment the following lines
+		$portdata = ord $parport->get_data();		# save present state
+		&SetFEED(OFF);								# freezes the data settings in the hardware
+		if ($setting == 0.0)
+		{
+			$ls273shadow &= ~0xC0;					# VCC (3.3 and 5) off
+		}
+		elsif ($setting == 3.3)
+		{
+			$ls273shadow &= ~0x40;					# 3V3 select
+			$ls273shadow |= 0x80;					# 
+		}
+		elsif ($setting == 5.0)
+		{
+			$ls273shadow |= 0xC0;					# 5V0 select
+		}
+		$parport->set_data(chr($ls273shadow));
+		&SetINIT(OFF);								# strobe 74LS273
+		&SetINIT(ON);								# 
+		$parport->set_data(chr($portdata));			# restore old
+		&SetFEED(ON);								# re-enable
+# for a simple ON/OFF control this is sufficient
+#	&SetINIT($setting);	# ON / OFF
+}
+
+#################################################################################################
+#
+# This is the modules that should be adapted to the REAL programming hardware where
+# it comes to voltage settings
+#
+#################################################################################################
+# set programming voltage
+sub SetVPP
+{
+	my $setting = $_[0];			# parameter that represents the desired voltage
+	my $portdata;
+
+##!#print "VPP: $setting \n";
+	if ($parport != -1)
+	{
+# for the CSGBLAST hardware uncomment the following lines
+		$portdata = ord $parport->get_data();		# save present state
+		&SetFEED(OFF);								# freezes the data settings in the hardware
+		if ($setting == 0)							# off
+		{
+			$dacvalue = 0;
+##!#print "dac1: $dacvalue \n";
+			$parport->set_data(chr($dacvalue));
+			&SetSTROBE(ON);
+			&SetSTROBE(OFF);
+			$ls273shadow &= ~0x20;						# VPP off
+			$parport->set_data(chr($ls273shadow));
+			&SetINIT(OFF);
+			&SetINIT(ON);								# clear 74LS273, VPP off	
+		}
+		else
+		{
+			if( ($setting < $read12v) || ($setting > 68))
+			{
+## should not happen!!
+			}
+			else
+			{
+				$dacvalue = int (($setting - $read12v) / 20 * 255);
+##!#print "dac2: $dacvalue \n";
+				$parport->set_data(chr($dacvalue));
+				&SetSTROBE(ON);
+				&SetSTROBE(OFF);
+				$dacvalueshadow = $dacvalue;
+				$ls273shadow |= 0x20;						# VPP ON
+				$parport->set_data(chr($ls273shadow));
+				&SetINIT(OFF);
+				&SetINIT(ON);								# clear 74LS273, VPP off	
+			}
+		}				
+		$parport->set_data(chr($portdata));			# restore old
+		&SetFEED(ON);								# re-enable
+	}
+	return FALSE;
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub InitAll
+{
+	&SetPort;
+	&SetGalParms(UNKNOWN);
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub MyExit
+{
+	&TurnOff;
+	exit;
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+# now device port is open, sync the hardware with the software
+sub HardwareInit
+{
+	&TurnOff;
+# for the CSGBLAST hardware uncomment the following lines
+	$parport->set_data(chr(0x7E));		# all row bits high, clock and data low
+	&SetFEED(ON);						# 
+#
+	&SetFEED(OFF);						# 
+	$parport->set_data(chr(0x00));		# reset everything
+	&SetSTROBE(ON);
+	&SetSTROBE(OFF);					# this clears the DAC
+	$parport->set_data(chr(0x00));		# @@reset everything
+	&SetINIT(OFF);						# strobe2
+	&SetINIT(ON);						# clear the 74LS273 latch (VCC/VPP = off)
+	$parport->set_data(chr(0x7E));		# all row bits high, clock and data low
+	&SetFEED(ON);						# 
+}
+
+##############################################################################################
+#
+# all functions that interact with HARDWARE
+#
+########################################### data #############################################
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub SetSDIN
+{
+	if ($parport != -1)
+	{
+		if ($_[0] == ON)
+		{
+			$parport->set_bit(0,1);				# data high	TO DUT
+		}
+		else
+		{
+			$parport->set_bit(0,0);				# data low	TO DUT
+		}
+	}
+	return FALSE;
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub SetSCLK
+{
+	if ($parport != -1)
+	{
+		if ($_[0] == ON)
+		{
+			$parport->set_bit(7,1);				# clock high TO DUT
+		}
+		else
+		{
+			$parport->set_bit(7,0);				# clock low	TO DUT
+		}
+	}
+	return FALSE;
+}	
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub SetRow
+{
+	if ($parport != -1)
+	{
+	    my $control = ord $parport->get_data();
+	
+		if ($_[0] > 63)
+		{
+			printf STDERR "Fatal: illegal row number $_[0]!\n";
+		}
+		$inverse = $_[0] & 0x3F;
+		$control = ($control & 0x81) | ($inverse <<= 1);			# keep clk and data bit
+    	$parport->set_data(chr($control));					# set bit
+	}
+	return FALSE;
+}
+
+######################################## outputs ##############################################
+
+#################################################################################################
+#
+# ON = low level @ interface pin, OFF = high level @ interface pin
+#
+#################################################################################################
+sub SetSTROBE
+{
+	if ($parport != -1)
+	{
+		my $control = ord $parport->get_control() & ~$STROBE;
+
+		if ($_[0] == ON)
+		{
+			$control |= $STROBE;	# out = low
+		}
+		$parport->set_control(chr($control));
+	}
+	return FALSE;
+}
+
+#################################################################################################
+#
+# ON = high level @ interface pin, OFF = low level @ interface pin
+#
+#################################################################################################
+sub SetFEED
+{
+	if ($parport != -1)
+	{
+	    my $control = ord $parport->get_control() & ~$LNFEED;
+
+   	 	if ($_[0] == !ON)
+   	 	{
+   	    	$control |= $LNFEED;
+   	 	}
+   	 	$parport->set_control(chr($control));
+	}
+	return FALSE;
+}
+
+#################################################################################################
+#
+# ON = high level @ interface pin, OFF is low level @ interface pin
+#
+#################################################################################################
+sub SetINIT
+{
+	if ($parport != -1)
+	{
+	    my $control = ord $parport->get_control() & ~$INIT;
+
+   	 	if ($_[0] == ON)
+    	{
+        	$control |= $INIT;
+    	}
+    	$parport->set_control(chr($control));
+	}
+	return FALSE;
+}
+
+#################################################################################################
+#
+# ON = high level @ interface pin, OFF is low level @ interface pin
+#
+#################################################################################################
+sub SetSEL
+{
+	if ($parport != -1)
+	{
+    	my $control = ord $parport->get_control() & ~$SELCTP;
+
+	    if ($_[0] == !ON)
+    	{
+        	$control |= $SELCTP;							# P/V- high
+    	}
+    	$parport->set_control(chr($control));				# set bit
+	}
+	return FALSE;
+}
+
+########################################## inputs ##############################################
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub GetACK
+{
+	if ($parport != -1)
+	{
+		my $val = ord $parport->get_status & $ACK;			# get bit
+
+		return ($val != 0) ? TRUE : FALSE;
+	}
+	return FALSE;
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub GetBUSY
+{
+	if ($parport != -1)
+	{
+		my $val = ord  $parport->get_status & $BUSY;
+
+		return ($val != 0) ? TRUE : FALSE;
+	}
+	return FALSE;
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub GetERROR
+{
+	if ($parport != -1)
+	{
+		my $val = ord  $parport->get_status & $ERROR;
+
+		return ($val != 0) ? TRUE : FALSE;
+	}
+	return FALSE;
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub GetPAPOUT
+{
+	if ($parport != -1)
+	{
+		my $val = ord  $parport->get_status & $PAPOUT;
+
+		return ($val != 0) ? TRUE : FALSE;
+	}
+	return FALSE;
+}
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub GetSELECT
+{
+	if ($parport != -1)
+	{
+		my $val = ord  $parport->get_status & $SELECT;
+
+		return ($val != 0) ? TRUE : FALSE;
+	}
+	return FALSE;
+}
+
+
+#################################################################################################
+#
+#
+#
+#################################################################################################
+sub DumpArray
+{
+	my $i;
+	my @arr = @{$_[0]};
+	my $len = $#arr;
+
+	printf "dumping array, size %d\n", $len;
+
+	for($i = 0; $i < $len; $i++)
+	{
+		printf "%1D ", $arr[$i];
+		if (($i & 31) == 31)
+		{
+			printf "\n";
+		}
+	}
+}
