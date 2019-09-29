@@ -11,3 +11,4 @@ There exist one programming board for 20 pin ZIF's and one for 24 pin ZIF's.
 
 'perlblast_nh' will run smootly with this hardware.
 
+I will upload the details for the programming boards soon (2019-09-29)
