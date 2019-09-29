@@ -1,0 +1,5796 @@
+%!PS-Adobe-1.0
+%
+% ULTImate Technology
+%
+% Initialisation:
+
+
+
+
+
+ 
+initmatrix
+1 setlinejoin 1 setlinecap
+/pw2 { dup mul } def
+/anglecorrect {
+dup 360 gt
+{ 360 sub exch
+360 sub exch } if
+} def
+/angleverify {
+dup 360 gt
+{ 360 sub } if
+dup 0 le
+{ 360 add} if
+} def
+/circle {
+pop
+360 add	anglecorrect
+arc } def
+/bigarc2 { dup 3 1 roll
+add angleverify
+exch 0 lt
+{arcn} {arc} ifelse } def
+/bigarc { 3 1 roll atan
+dup 6 5 roll %% 64 div
+dup abs 360 sub abs
+0.5 lt {circle} {bigarc2}
+ifelse } def
+/newarc { 2 copy
+currentpoint 3 2 roll
+sub 3 1 roll
+exch sub 2 copy
+pw2 exch pw2 add sqrt
+dup 0.5 gt {bigarc} if
+cleartomark } def
+
+28.8 28.8 translate
+0.06 0.06 scale
+
+6 setlinewidth
+
+7 setlinewidth
+ newpath
+2654 4910 moveto
+2642 4898 lineto
+2642 4874 lineto
+2654 4862 lineto
+2701 4862 lineto
+2712 4874 lineto
+2712 4898 lineto
+2701 4910 lineto
+ stroke
+ newpath
+2642 4946 moveto
+2712 4946 lineto
+2712 4994 lineto
+ stroke
+ newpath
+2712 5030 moveto
+2642 5030 lineto
+ stroke
+ newpath
+2677 5030 moveto
+2677 5042 lineto
+ stroke
+ newpath
+2642 5078 moveto
+2677 5042 lineto
+2712 5078 lineto
+ stroke
+ newpath
+2952 4874 moveto
+2952 4898 lineto
+ stroke
+ newpath
+2952 4886 moveto
+2882 4886 lineto
+ stroke
+ newpath
+2882 4874 moveto
+2882 4898 lineto
+ stroke
+ newpath
+2941 4946 moveto
+2894 4946 lineto
+2882 4958 lineto
+2882 4970 lineto
+2882 4982 lineto
+2894 4994 lineto
+2941 4946 lineto
+2952 4958 lineto
+2952 4982 lineto
+2941 4994 lineto
+2894 4994 lineto
+ stroke
+ newpath
+3192 4874 moveto
+3192 4898 lineto
+ stroke
+ newpath
+3192 4886 moveto
+3122 4886 lineto
+ stroke
+ newpath
+3122 4874 moveto
+3122 4898 lineto
+ stroke
+ newpath
+3145 4958 moveto
+3122 4982 lineto
+3192 4982 lineto
+ stroke
+ newpath
+3432 4874 moveto
+3432 4898 lineto
+ stroke
+ newpath
+3432 4886 moveto
+3362 4886 lineto
+ stroke
+ newpath
+3362 4874 moveto
+3362 4898 lineto
+ stroke
+ newpath
+3374 4946 moveto
+3362 4958 lineto
+3362 4982 lineto
+3374 4994 lineto
+3385 4994 lineto
+3432 4946 lineto
+3432 4994 lineto
+ stroke
+ newpath
+3672 4874 moveto
+3672 4898 lineto
+ stroke
+ newpath
+3672 4886 moveto
+3602 4886 lineto
+ stroke
+ newpath
+3602 4874 moveto
+3602 4898 lineto
+ stroke
+ newpath
+3614 4946 moveto
+3602 4958 lineto
+3602 4982 lineto
+3614 4994 lineto
+3625 4994 lineto
+3637 4982 lineto
+3649 4994 lineto
+3661 4994 lineto
+3672 4982 lineto
+3672 4958 lineto
+3661 4946 lineto
+ stroke
+ newpath
+3637 4970 moveto
+3637 4982 lineto
+ stroke
+ newpath
+3912 4874 moveto
+3912 4898 lineto
+ stroke
+ newpath
+3912 4886 moveto
+3842 4886 lineto
+ stroke
+ newpath
+3842 4874 moveto
+3842 4898 lineto
+ stroke
+ newpath
+3912 4994 moveto
+3842 4994 lineto
+3889 4946 lineto
+3889 5006 lineto
+ stroke
+ newpath
+4152 4874 moveto
+4152 4898 lineto
+ stroke
+ newpath
+4152 4886 moveto
+4082 4886 lineto
+ stroke
+ newpath
+4082 4874 moveto
+4082 4898 lineto
+ stroke
+ newpath
+4082 4994 moveto
+4082 4946 lineto
+4105 4946 lineto
+4105 4982 lineto
+4117 4994 lineto
+4141 4994 lineto
+4152 4982 lineto
+4152 4958 lineto
+4141 4946 lineto
+ stroke
+ newpath
+4392 4874 moveto
+4392 4898 lineto
+ stroke
+ newpath
+4392 4886 moveto
+4322 4886 lineto
+ stroke
+ newpath
+4322 4874 moveto
+4322 4898 lineto
+ stroke
+ newpath
+4322 4982 moveto
+4322 4958 lineto
+4334 4946 lineto
+4381 4946 lineto
+4392 4958 lineto
+4392 4982 lineto
+4381 4994 lineto
+4369 4994 lineto
+4357 4982 lineto
+4357 4946 lineto
+ stroke
+ newpath
+4632 4874 moveto
+4632 4898 lineto
+ stroke
+ newpath
+4632 4886 moveto
+4562 4886 lineto
+ stroke
+ newpath
+4562 4874 moveto
+4562 4898 lineto
+ stroke
+ newpath
+4562 4946 moveto
+4562 5006 lineto
+4574 5006 lineto
+4609 4970 lineto
+4632 4970 lineto
+ stroke
+ newpath
+4872 4874 moveto
+4872 4898 lineto
+ stroke
+ newpath
+4872 4886 moveto
+4802 4886 lineto
+ stroke
+ newpath
+4802 4874 moveto
+4802 4898 lineto
+ stroke
+ newpath
+4861 4946 moveto
+4849 4946 lineto
+4837 4958 lineto
+4825 4946 lineto
+4814 4946 lineto
+4802 4958 lineto
+4802 4982 lineto
+4814 4994 lineto
+4825 4994 lineto
+4837 4982 lineto
+4849 4994 lineto
+4861 4994 lineto
+4872 4982 lineto
+4872 4958 lineto
+4861 4946 lineto
+ stroke
+ newpath
+4837 4958 moveto
+4837 4982 lineto
+ stroke
+ newpath
+5112 4858 moveto
+5112 4882 lineto
+ stroke
+ newpath
+5112 4870 moveto
+5042 4870 lineto
+ stroke
+ newpath
+5042 4858 moveto
+5042 4882 lineto
+ stroke
+ newpath
+5112 4942 moveto
+5112 4966 lineto
+5101 4978 lineto
+5054 4978 lineto
+5042 4966 lineto
+5042 4942 lineto
+5054 4930 lineto
+5065 4930 lineto
+5077 4942 lineto
+5077 4978 lineto
+ stroke
+ newpath
+5282 4930 moveto
+5282 4894 lineto
+5294 4882 lineto
+5341 4882 lineto
+5352 4894 lineto
+5352 4930 lineto
+5317 4930 lineto
+5317 4918 lineto
+ stroke
+ newpath
+5352 4966 moveto
+5282 4966 lineto
+5352 5014 lineto
+5282 5014 lineto
+ stroke
+ newpath
+5352 5050 moveto
+5282 5050 lineto
+5282 5086 lineto
+5294 5098 lineto
+5341 5098 lineto
+5352 5086 lineto
+5352 5050 lineto
+ stroke
+ newpath
+5352 5050 moveto
+5 setlinewidth
+5340 5202 moveto
+5340 5219 lineto
+ stroke
+ newpath
+5340 5211 moveto
+5290 5211 lineto
+ stroke
+ newpath
+5290 5202 moveto
+5290 5219 lineto
+ stroke
+ newpath
+5307 5262 moveto
+5290 5279 lineto
+5340 5279 lineto
+ stroke
+ newpath
+5332 5314 moveto
+5298 5314 lineto
+5290 5322 lineto
+5290 5331 lineto
+5290 5339 lineto
+5298 5348 lineto
+5332 5314 lineto
+5340 5322 lineto
+5340 5339 lineto
+5332 5348 lineto
+5298 5348 lineto
+ stroke
+ newpath
+5340 5374 moveto
+5298 5416 lineto
+ stroke
+ newpath
+5332 5434 moveto
+5298 5434 lineto
+5290 5442 lineto
+5290 5459 lineto
+5298 5468 lineto
+5332 5468 lineto
+5340 5459 lineto
+5340 5442 lineto
+5332 5434 lineto
+ stroke
+ newpath
+5340 5528 moveto
+5340 5494 lineto
+5290 5494 lineto
+5290 5528 lineto
+ stroke
+ newpath
+5315 5494 moveto
+5315 5519 lineto
+ stroke
+ newpath
+5315 5519 moveto
+7 setlinewidth
+5112 5314 moveto
+5112 5338 lineto
+ stroke
+ newpath
+5112 5326 moveto
+5042 5326 lineto
+ stroke
+ newpath
+5042 5314 moveto
+5042 5338 lineto
+ stroke
+ newpath
+5065 5398 moveto
+5042 5422 lineto
+5112 5422 lineto
+ stroke
+ newpath
+5065 5482 moveto
+5042 5506 lineto
+5112 5506 lineto
+ stroke
+ newpath
+4861 5386 moveto
+4814 5386 lineto
+4802 5398 lineto
+4802 5422 lineto
+4814 5434 lineto
+4861 5434 lineto
+4872 5422 lineto
+4872 5398 lineto
+4861 5386 lineto
+ stroke
+ newpath
+4861 5470 moveto
+4814 5470 lineto
+4802 5482 lineto
+4802 5494 lineto
+4802 5506 lineto
+4814 5518 lineto
+4861 5470 lineto
+4872 5482 lineto
+4872 5506 lineto
+4861 5518 lineto
+4814 5518 lineto
+ stroke
+ newpath
+4621 5386 moveto
+4574 5386 lineto
+4562 5398 lineto
+4562 5422 lineto
+4574 5434 lineto
+4621 5434 lineto
+4632 5422 lineto
+4632 5398 lineto
+4621 5386 lineto
+ stroke
+ newpath
+4585 5482 moveto
+4562 5506 lineto
+4632 5506 lineto
+ stroke
+ newpath
+4381 5386 moveto
+4334 5386 lineto
+4322 5398 lineto
+4322 5422 lineto
+4334 5434 lineto
+4381 5434 lineto
+4392 5422 lineto
+4392 5398 lineto
+4381 5386 lineto
+ stroke
+ newpath
+4334 5470 moveto
+4322 5482 lineto
+4322 5506 lineto
+4334 5518 lineto
+4345 5518 lineto
+4392 5470 lineto
+4392 5518 lineto
+ stroke
+ newpath
+4141 5386 moveto
+4094 5386 lineto
+4082 5398 lineto
+4082 5422 lineto
+4094 5434 lineto
+4141 5434 lineto
+4152 5422 lineto
+4152 5398 lineto
+4141 5386 lineto
+ stroke
+ newpath
+4094 5470 moveto
+4082 5482 lineto
+4082 5506 lineto
+4094 5518 lineto
+4105 5518 lineto
+4117 5506 lineto
+4129 5518 lineto
+4141 5518 lineto
+4152 5506 lineto
+4152 5482 lineto
+4141 5470 lineto
+ stroke
+ newpath
+4117 5494 moveto
+4117 5506 lineto
+ stroke
+ newpath
+3901 5386 moveto
+3854 5386 lineto
+3842 5398 lineto
+3842 5422 lineto
+3854 5434 lineto
+3901 5434 lineto
+3912 5422 lineto
+3912 5398 lineto
+3901 5386 lineto
+ stroke
+ newpath
+3912 5518 moveto
+3842 5518 lineto
+3889 5470 lineto
+3889 5530 lineto
+ stroke
+ newpath
+3661 5386 moveto
+3614 5386 lineto
+3602 5398 lineto
+3602 5422 lineto
+3614 5434 lineto
+3661 5434 lineto
+3672 5422 lineto
+3672 5398 lineto
+3661 5386 lineto
+ stroke
+ newpath
+3602 5518 moveto
+3602 5470 lineto
+3625 5470 lineto
+3625 5506 lineto
+3637 5518 lineto
+3661 5518 lineto
+3672 5506 lineto
+3672 5482 lineto
+3661 5470 lineto
+ stroke
+ newpath
+3421 5386 moveto
+3374 5386 lineto
+3362 5398 lineto
+3362 5422 lineto
+3374 5434 lineto
+3421 5434 lineto
+3432 5422 lineto
+3432 5398 lineto
+3421 5386 lineto
+ stroke
+ newpath
+3362 5506 moveto
+3362 5482 lineto
+3374 5470 lineto
+3421 5470 lineto
+3432 5482 lineto
+3432 5506 lineto
+3421 5518 lineto
+3409 5518 lineto
+3397 5506 lineto
+3397 5470 lineto
+ stroke
+ newpath
+3181 5386 moveto
+3134 5386 lineto
+3122 5398 lineto
+3122 5422 lineto
+3134 5434 lineto
+3181 5434 lineto
+3192 5422 lineto
+3192 5398 lineto
+3181 5386 lineto
+ stroke
+ newpath
+3122 5470 moveto
+3122 5530 lineto
+3134 5530 lineto
+3169 5494 lineto
+3192 5494 lineto
+ stroke
+ newpath
+2952 5314 moveto
+2952 5338 lineto
+ stroke
+ newpath
+2952 5326 moveto
+2882 5326 lineto
+ stroke
+ newpath
+2882 5314 moveto
+2882 5338 lineto
+ stroke
+ newpath
+2905 5398 moveto
+2882 5422 lineto
+2952 5422 lineto
+ stroke
+ newpath
+2894 5470 moveto
+2882 5482 lineto
+2882 5506 lineto
+2894 5518 lineto
+2905 5518 lineto
+2952 5470 lineto
+2952 5518 lineto
+ stroke
+ newpath
+2642 5302 moveto
+2689 5302 lineto
+2712 5326 lineto
+2689 5350 lineto
+2642 5350 lineto
+ stroke
+ newpath
+2654 5434 moveto
+2642 5422 lineto
+2642 5398 lineto
+2654 5386 lineto
+2701 5386 lineto
+2712 5398 lineto
+2712 5422 lineto
+2701 5434 lineto
+ stroke
+ newpath
+2654 5518 moveto
+2642 5506 lineto
+2642 5482 lineto
+2654 5470 lineto
+2701 5470 lineto
+2712 5482 lineto
+2712 5506 lineto
+2701 5518 lineto
+ stroke
+ newpath
+1987 4663 moveto
+1975 4651 lineto
+1975 4627 lineto
+1987 4615 lineto
+2034 4615 lineto
+2045 4627 lineto
+2045 4651 lineto
+2034 4663 lineto
+ stroke
+ newpath
+1677 4615 moveto
+1619 4615 lineto
+1607 4627 lineto
+1607 4651 lineto
+1619 4663 lineto
+1677 4663 lineto
+ stroke
+ newpath
+1654 4615 moveto
+1654 4663 lineto
+ stroke
+ newpath
+1987 5275 moveto
+1975 5263 lineto
+1975 5239 lineto
+1987 5227 lineto
+2034 5227 lineto
+2045 5239 lineto
+2045 5263 lineto
+2034 5275 lineto
+ stroke
+ newpath
+1677 5227 moveto
+1619 5227 lineto
+1607 5239 lineto
+1607 5263 lineto
+1619 5275 lineto
+1677 5275 lineto
+ stroke
+ newpath
+1654 5227 moveto
+1654 5275 lineto
+ stroke
+ newpath
+1987 5983 moveto
+1975 5971 lineto
+1975 5947 lineto
+1987 5935 lineto
+2034 5935 lineto
+2045 5947 lineto
+2045 5971 lineto
+2034 5983 lineto
+ stroke
+ newpath
+1677 5935 moveto
+1619 5935 lineto
+1607 5947 lineto
+1607 5971 lineto
+1619 5983 lineto
+1677 5983 lineto
+ stroke
+ newpath
+1654 5935 moveto
+1654 5983 lineto
+ stroke
+ newpath
+1654 5983 moveto
+6 setlinewidth
+2034 3815 moveto
+2034 3841 lineto
+2060 3841 lineto
+2060 3815 lineto
+2034 3815 lineto
+2037 3818 lineto
+2037 3838 lineto
+2057 3838 lineto
+2057 3818 lineto
+2037 3818 lineto
+2040 3821 lineto
+2040 3835 lineto
+2054 3835 lineto
+2054 3821 lineto
+2040 3821 lineto
+2043 3824 lineto
+2043 3832 lineto
+2051 3832 lineto
+2051 3824 lineto
+2043 3824 lineto
+2046 3827 lineto
+2046 3829 lineto
+2048 3829 lineto
+2048 3827 lineto
+2046 3827 lineto
+ stroke
+ newpath
+1326 4415 moveto
+1326 4441 lineto
+1352 4441 lineto
+1352 4415 lineto
+1326 4415 lineto
+1329 4418 lineto
+1329 4438 lineto
+1349 4438 lineto
+1349 4418 lineto
+1329 4418 lineto
+1332 4421 lineto
+1332 4435 lineto
+1346 4435 lineto
+1346 4421 lineto
+1332 4421 lineto
+1335 4424 lineto
+1335 4432 lineto
+1343 4432 lineto
+1343 4424 lineto
+1335 4424 lineto
+1338 4427 lineto
+1338 4429 lineto
+1340 4429 lineto
+1340 4427 lineto
+1338 4427 lineto
+ stroke
+ newpath
+7578 4415 moveto
+7578 4441 lineto
+7604 4441 lineto
+7604 4415 lineto
+7578 4415 lineto
+7581 4418 lineto
+7581 4438 lineto
+7601 4438 lineto
+7601 4418 lineto
+7581 4418 lineto
+7584 4421 lineto
+7584 4435 lineto
+7598 4435 lineto
+7598 4421 lineto
+7584 4421 lineto
+7587 4424 lineto
+7587 4432 lineto
+7595 4432 lineto
+7595 4424 lineto
+7587 4424 lineto
+7590 4427 lineto
+7590 4429 lineto
+7592 4429 lineto
+7592 4427 lineto
+7590 4427 lineto
+ stroke
+ newpath
+1206 4583 moveto
+1206 4609 lineto
+1232 4609 lineto
+1232 4583 lineto
+1206 4583 lineto
+1209 4586 lineto
+1209 4606 lineto
+1229 4606 lineto
+1229 4586 lineto
+1209 4586 lineto
+1212 4589 lineto
+1212 4603 lineto
+1226 4603 lineto
+1226 4589 lineto
+1212 4589 lineto
+1215 4592 lineto
+1215 4600 lineto
+1223 4600 lineto
+1223 4592 lineto
+1215 4592 lineto
+1218 4595 lineto
+1218 4597 lineto
+1220 4597 lineto
+1220 4595 lineto
+1218 4595 lineto
+ stroke
+ newpath
+7578 4895 moveto
+7578 4921 lineto
+7604 4921 lineto
+7604 4895 lineto
+7578 4895 lineto
+7581 4898 lineto
+7581 4918 lineto
+7601 4918 lineto
+7601 4898 lineto
+7581 4898 lineto
+7584 4901 lineto
+7584 4915 lineto
+7598 4915 lineto
+7598 4901 lineto
+7584 4901 lineto
+7587 4904 lineto
+7587 4912 lineto
+7595 4912 lineto
+7595 4904 lineto
+7587 4904 lineto
+7590 4907 lineto
+7590 4909 lineto
+7592 4909 lineto
+7592 4907 lineto
+7590 4907 lineto
+ stroke
+ newpath
+7578 5375 moveto
+7578 5401 lineto
+7604 5401 lineto
+7604 5375 lineto
+7578 5375 lineto
+7581 5378 lineto
+7581 5398 lineto
+7601 5398 lineto
+7601 5378 lineto
+7581 5378 lineto
+7584 5381 lineto
+7584 5395 lineto
+7598 5395 lineto
+7598 5381 lineto
+7584 5381 lineto
+7587 5384 lineto
+7587 5392 lineto
+7595 5392 lineto
+7595 5384 lineto
+7587 5384 lineto
+7590 5387 lineto
+7590 5389 lineto
+7592 5389 lineto
+7592 5387 lineto
+7590 5387 lineto
+ stroke
+ newpath
+534 5375 moveto
+534 5401 lineto
+560 5401 lineto
+560 5375 lineto
+534 5375 lineto
+537 5378 lineto
+537 5398 lineto
+557 5398 lineto
+557 5378 lineto
+537 5378 lineto
+540 5381 lineto
+540 5395 lineto
+554 5395 lineto
+554 5381 lineto
+540 5381 lineto
+543 5384 lineto
+543 5392 lineto
+551 5392 lineto
+551 5384 lineto
+543 5384 lineto
+546 5387 lineto
+546 5389 lineto
+548 5389 lineto
+548 5387 lineto
+546 5387 lineto
+ stroke
+ newpath
+1230 5531 moveto
+1230 5557 lineto
+1256 5557 lineto
+1256 5531 lineto
+1230 5531 lineto
+1233 5534 lineto
+1233 5554 lineto
+1253 5554 lineto
+1253 5534 lineto
+1233 5534 lineto
+1236 5537 lineto
+1236 5551 lineto
+1250 5551 lineto
+1250 5537 lineto
+1236 5537 lineto
+1239 5540 lineto
+1239 5548 lineto
+1247 5548 lineto
+1247 5540 lineto
+1239 5540 lineto
+1242 5543 lineto
+1242 5545 lineto
+1244 5545 lineto
+1244 5543 lineto
+1242 5543 lineto
+ stroke
+ newpath
+1230 5615 moveto
+1230 5641 lineto
+1256 5641 lineto
+1256 5615 lineto
+1230 5615 lineto
+1233 5618 lineto
+1233 5638 lineto
+1253 5638 lineto
+1253 5618 lineto
+1233 5618 lineto
+1236 5621 lineto
+1236 5635 lineto
+1250 5635 lineto
+1250 5621 lineto
+1236 5621 lineto
+1239 5624 lineto
+1239 5632 lineto
+1247 5632 lineto
+1247 5624 lineto
+1239 5624 lineto
+1242 5627 lineto
+1242 5629 lineto
+1244 5629 lineto
+1244 5627 lineto
+1242 5627 lineto
+ stroke
+ newpath
+2262 5687 moveto
+2262 5713 lineto
+2288 5713 lineto
+2288 5687 lineto
+2262 5687 lineto
+2265 5690 lineto
+2265 5710 lineto
+2285 5710 lineto
+2285 5690 lineto
+2265 5690 lineto
+2268 5693 lineto
+2268 5707 lineto
+2282 5707 lineto
+2282 5693 lineto
+2268 5693 lineto
+2271 5696 lineto
+2271 5704 lineto
+2279 5704 lineto
+2279 5696 lineto
+2271 5696 lineto
+2274 5699 lineto
+2274 5701 lineto
+2276 5701 lineto
+2276 5699 lineto
+2274 5699 lineto
+ stroke
+ newpath
+2262 5903 moveto
+2262 5929 lineto
+2288 5929 lineto
+2288 5903 lineto
+2262 5903 lineto
+2265 5906 lineto
+2265 5926 lineto
+2285 5926 lineto
+2285 5906 lineto
+2265 5906 lineto
+2268 5909 lineto
+2268 5923 lineto
+2282 5923 lineto
+2282 5909 lineto
+2268 5909 lineto
+2271 5912 lineto
+2271 5920 lineto
+2279 5920 lineto
+2279 5912 lineto
+2271 5912 lineto
+2274 5915 lineto
+2274 5917 lineto
+2276 5917 lineto
+2276 5915 lineto
+2274 5915 lineto
+ stroke
+ newpath
+318 6095 moveto
+318 6121 lineto
+344 6121 lineto
+344 6095 lineto
+318 6095 lineto
+321 6098 lineto
+321 6118 lineto
+341 6118 lineto
+341 6098 lineto
+321 6098 lineto
+324 6101 lineto
+324 6115 lineto
+338 6115 lineto
+338 6101 lineto
+324 6101 lineto
+327 6104 lineto
+327 6112 lineto
+335 6112 lineto
+335 6104 lineto
+327 6104 lineto
+330 6107 lineto
+330 6109 lineto
+332 6109 lineto
+332 6107 lineto
+330 6107 lineto
+ stroke
+ newpath
+1326 6095 moveto
+1326 6121 lineto
+1352 6121 lineto
+1352 6095 lineto
+1326 6095 lineto
+1329 6098 lineto
+1329 6118 lineto
+1349 6118 lineto
+1349 6098 lineto
+1329 6098 lineto
+1332 6101 lineto
+1332 6115 lineto
+1346 6115 lineto
+1346 6101 lineto
+1332 6101 lineto
+1335 6104 lineto
+1335 6112 lineto
+1343 6112 lineto
+1343 6104 lineto
+1335 6104 lineto
+1338 6107 lineto
+1338 6109 lineto
+1340 6109 lineto
+1340 6107 lineto
+1338 6107 lineto
+ stroke
+ newpath
+7578 6095 moveto
+7578 6121 lineto
+7604 6121 lineto
+7604 6095 lineto
+7578 6095 lineto
+7581 6098 lineto
+7581 6118 lineto
+7601 6118 lineto
+7601 6098 lineto
+7581 6098 lineto
+7584 6101 lineto
+7584 6115 lineto
+7598 6115 lineto
+7598 6101 lineto
+7584 6101 lineto
+7587 6104 lineto
+7587 6112 lineto
+7595 6112 lineto
+7595 6104 lineto
+7587 6104 lineto
+7590 6107 lineto
+7590 6109 lineto
+7592 6109 lineto
+7592 6107 lineto
+7590 6107 lineto
+ stroke
+ newpath
+2490 6347 moveto
+2490 6373 lineto
+2516 6373 lineto
+2516 6347 lineto
+2490 6347 lineto
+2493 6350 lineto
+2493 6370 lineto
+2513 6370 lineto
+2513 6350 lineto
+2493 6350 lineto
+2496 6353 lineto
+2496 6367 lineto
+2510 6367 lineto
+2510 6353 lineto
+2496 6353 lineto
+2499 6356 lineto
+2499 6364 lineto
+2507 6364 lineto
+2507 6356 lineto
+2499 6356 lineto
+2502 6359 lineto
+2502 6361 lineto
+2504 6361 lineto
+2504 6359 lineto
+2502 6359 lineto
+ stroke
+ newpath
+1326 6479 moveto
+1326 6505 lineto
+1352 6505 lineto
+1352 6479 lineto
+1326 6479 lineto
+1329 6482 lineto
+1329 6502 lineto
+1349 6502 lineto
+1349 6482 lineto
+1329 6482 lineto
+1332 6485 lineto
+1332 6499 lineto
+1346 6499 lineto
+1346 6485 lineto
+1332 6485 lineto
+1335 6488 lineto
+1335 6496 lineto
+1343 6496 lineto
+1343 6488 lineto
+1335 6488 lineto
+1338 6491 lineto
+1338 6493 lineto
+1340 6493 lineto
+1340 6491 lineto
+1338 6491 lineto
+ stroke
+ newpath
+2262 6479 moveto
+2262 6505 lineto
+2288 6505 lineto
+2288 6479 lineto
+2262 6479 lineto
+2265 6482 lineto
+2265 6502 lineto
+2285 6502 lineto
+2285 6482 lineto
+2265 6482 lineto
+2268 6485 lineto
+2268 6499 lineto
+2282 6499 lineto
+2282 6485 lineto
+2268 6485 lineto
+2271 6488 lineto
+2271 6496 lineto
+2279 6496 lineto
+2279 6488 lineto
+2271 6488 lineto
+2274 6491 lineto
+2274 6493 lineto
+2276 6493 lineto
+2276 6491 lineto
+2274 6491 lineto
+ stroke
+ newpath
+2898 6479 moveto
+2898 6505 lineto
+2924 6505 lineto
+2924 6479 lineto
+2898 6479 lineto
+2901 6482 lineto
+2901 6502 lineto
+2921 6502 lineto
+2921 6482 lineto
+2901 6482 lineto
+2904 6485 lineto
+2904 6499 lineto
+2918 6499 lineto
+2918 6485 lineto
+2904 6485 lineto
+2907 6488 lineto
+2907 6496 lineto
+2915 6496 lineto
+2915 6488 lineto
+2907 6488 lineto
+2910 6491 lineto
+2910 6493 lineto
+2912 6493 lineto
+2912 6491 lineto
+2910 6491 lineto
+ stroke
+ newpath
+3138 6479 moveto
+3138 6505 lineto
+3164 6505 lineto
+3164 6479 lineto
+3138 6479 lineto
+3141 6482 lineto
+3141 6502 lineto
+3161 6502 lineto
+3161 6482 lineto
+3141 6482 lineto
+3144 6485 lineto
+3144 6499 lineto
+3158 6499 lineto
+3158 6485 lineto
+3144 6485 lineto
+3147 6488 lineto
+3147 6496 lineto
+3155 6496 lineto
+3155 6488 lineto
+3147 6488 lineto
+3150 6491 lineto
+3150 6493 lineto
+3152 6493 lineto
+3152 6491 lineto
+3150 6491 lineto
+ stroke
+ newpath
+3378 6479 moveto
+3378 6505 lineto
+3404 6505 lineto
+3404 6479 lineto
+3378 6479 lineto
+3381 6482 lineto
+3381 6502 lineto
+3401 6502 lineto
+3401 6482 lineto
+3381 6482 lineto
+3384 6485 lineto
+3384 6499 lineto
+3398 6499 lineto
+3398 6485 lineto
+3384 6485 lineto
+3387 6488 lineto
+3387 6496 lineto
+3395 6496 lineto
+3395 6488 lineto
+3387 6488 lineto
+3390 6491 lineto
+3390 6493 lineto
+3392 6493 lineto
+3392 6491 lineto
+3390 6491 lineto
+ stroke
+ newpath
+3618 6479 moveto
+3618 6505 lineto
+3644 6505 lineto
+3644 6479 lineto
+3618 6479 lineto
+3621 6482 lineto
+3621 6502 lineto
+3641 6502 lineto
+3641 6482 lineto
+3621 6482 lineto
+3624 6485 lineto
+3624 6499 lineto
+3638 6499 lineto
+3638 6485 lineto
+3624 6485 lineto
+3627 6488 lineto
+3627 6496 lineto
+3635 6496 lineto
+3635 6488 lineto
+3627 6488 lineto
+3630 6491 lineto
+3630 6493 lineto
+3632 6493 lineto
+3632 6491 lineto
+3630 6491 lineto
+ stroke
+ newpath
+3858 6479 moveto
+3858 6505 lineto
+3884 6505 lineto
+3884 6479 lineto
+3858 6479 lineto
+3861 6482 lineto
+3861 6502 lineto
+3881 6502 lineto
+3881 6482 lineto
+3861 6482 lineto
+3864 6485 lineto
+3864 6499 lineto
+3878 6499 lineto
+3878 6485 lineto
+3864 6485 lineto
+3867 6488 lineto
+3867 6496 lineto
+3875 6496 lineto
+3875 6488 lineto
+3867 6488 lineto
+3870 6491 lineto
+3870 6493 lineto
+3872 6493 lineto
+3872 6491 lineto
+3870 6491 lineto
+ stroke
+ newpath
+4098 6479 moveto
+4098 6505 lineto
+4124 6505 lineto
+4124 6479 lineto
+4098 6479 lineto
+4101 6482 lineto
+4101 6502 lineto
+4121 6502 lineto
+4121 6482 lineto
+4101 6482 lineto
+4104 6485 lineto
+4104 6499 lineto
+4118 6499 lineto
+4118 6485 lineto
+4104 6485 lineto
+4107 6488 lineto
+4107 6496 lineto
+4115 6496 lineto
+4115 6488 lineto
+4107 6488 lineto
+4110 6491 lineto
+4110 6493 lineto
+4112 6493 lineto
+4112 6491 lineto
+4110 6491 lineto
+ stroke
+ newpath
+4338 6479 moveto
+4338 6505 lineto
+4364 6505 lineto
+4364 6479 lineto
+4338 6479 lineto
+4341 6482 lineto
+4341 6502 lineto
+4361 6502 lineto
+4361 6482 lineto
+4341 6482 lineto
+4344 6485 lineto
+4344 6499 lineto
+4358 6499 lineto
+4358 6485 lineto
+4344 6485 lineto
+4347 6488 lineto
+4347 6496 lineto
+4355 6496 lineto
+4355 6488 lineto
+4347 6488 lineto
+4350 6491 lineto
+4350 6493 lineto
+4352 6493 lineto
+4352 6491 lineto
+4350 6491 lineto
+ stroke
+ newpath
+4578 6479 moveto
+4578 6505 lineto
+4604 6505 lineto
+4604 6479 lineto
+4578 6479 lineto
+4581 6482 lineto
+4581 6502 lineto
+4601 6502 lineto
+4601 6482 lineto
+4581 6482 lineto
+4584 6485 lineto
+4584 6499 lineto
+4598 6499 lineto
+4598 6485 lineto
+4584 6485 lineto
+4587 6488 lineto
+4587 6496 lineto
+4595 6496 lineto
+4595 6488 lineto
+4587 6488 lineto
+4590 6491 lineto
+4590 6493 lineto
+4592 6493 lineto
+4592 6491 lineto
+4590 6491 lineto
+ stroke
+ newpath
+4818 6479 moveto
+4818 6505 lineto
+4844 6505 lineto
+4844 6479 lineto
+4818 6479 lineto
+4821 6482 lineto
+4821 6502 lineto
+4841 6502 lineto
+4841 6482 lineto
+4821 6482 lineto
+4824 6485 lineto
+4824 6499 lineto
+4838 6499 lineto
+4838 6485 lineto
+4824 6485 lineto
+4827 6488 lineto
+4827 6496 lineto
+4835 6496 lineto
+4835 6488 lineto
+4827 6488 lineto
+4830 6491 lineto
+4830 6493 lineto
+4832 6493 lineto
+4832 6491 lineto
+4830 6491 lineto
+ stroke
+ newpath
+4830 6491 moveto
+25 setlinewidth
+6673 7908 moveto
+6685 7908 lineto
+6685 12108 lineto
+6673 12108 lineto
+6673 7908 lineto
+ stroke
+ newpath
+6621 12114 moveto
+6621 12102 lineto
+7993 12102 lineto
+7993 7914 lineto
+6621 7914 lineto
+6621 7902 lineto
+7999 7902 lineto
+8005 7908 lineto
+8005 12108 lineto
+7999 12114 lineto
+6621 12114 lineto
+ stroke
+ newpath
+6921 10302 moveto
+6921 10314 lineto
+6681 10314 lineto
+6681 10302 lineto
+6921 10302 lineto
+ stroke
+ newpath
+6921 8622 moveto
+6921 8634 lineto
+6681 8634 lineto
+6681 8622 lineto
+6921 8622 lineto
+ stroke
+ newpath
+6925 12108 moveto
+6913 12108 lineto
+6915 7908 lineto
+6927 7908 lineto
+6925 12108 lineto
+ stroke
+ newpath
+7165 12108 moveto
+7153 12108 lineto
+7155 7908 lineto
+7167 7908 lineto
+7165 12108 lineto
+ stroke
+ newpath
+7999 10902 moveto
+7999 10914 lineto
+7761 10914 lineto
+7761 10902 lineto
+7999 10902 lineto
+ stroke
+ newpath
+7999 10062 moveto
+7999 10074 lineto
+7761 10074 lineto
+7761 10062 lineto
+7999 10062 lineto
+ stroke
+ newpath
+7765 12108 moveto
+7753 12108 lineto
+7755 7903 lineto
+7767 7903 lineto
+7765 12108 lineto
+ stroke
+ newpath
+7765 12108 moveto
+7 setlinewidth
+7920 7994 moveto
+7920 8018 lineto
+ stroke
+ newpath
+7920 8006 moveto
+7850 8006 lineto
+ stroke
+ newpath
+7850 7994 moveto
+7850 8018 lineto
+ stroke
+ newpath
+7920 8066 moveto
+7873 8066 lineto
+7873 8102 lineto
+7885 8114 lineto
+7920 8114 lineto
+ stroke
+ newpath
+7920 8174 moveto
+7873 8174 lineto
+ stroke
+ newpath
+7850 8174 moveto
+7850 8174 lineto
+ stroke
+ newpath
+7873 8234 moveto
+7873 8282 lineto
+ stroke
+ newpath
+7850 8258 moveto
+7909 8258 lineto
+7920 8270 lineto
+7920 8282 lineto
+ stroke
+ newpath
+7920 8342 moveto
+7873 8342 lineto
+ stroke
+ newpath
+7850 8342 moveto
+7850 8342 lineto
+ stroke
+ newpath
+7873 8414 moveto
+7873 8438 lineto
+7885 8450 lineto
+7920 8450 lineto
+7920 8414 lineto
+7909 8402 lineto
+7897 8414 lineto
+7897 8450 lineto
+ stroke
+ newpath
+7850 8486 moveto
+7862 8498 lineto
+7920 8498 lineto
+ stroke
+ newpath
+7920 10142 moveto
+7850 10142 lineto
+7850 10178 lineto
+7862 10190 lineto
+7873 10190 lineto
+7885 10178 lineto
+7885 10142 lineto
+ stroke
+ newpath
+7873 10238 moveto
+7873 10262 lineto
+7885 10274 lineto
+7920 10274 lineto
+7920 10238 lineto
+7909 10226 lineto
+7897 10238 lineto
+7897 10274 lineto
+ stroke
+ newpath
+7943 10322 moveto
+7943 10346 lineto
+7931 10358 lineto
+7885 10358 lineto
+7873 10346 lineto
+7873 10322 lineto
+7885 10310 lineto
+7909 10310 lineto
+7920 10322 lineto
+7920 10358 lineto
+ stroke
+ newpath
+7920 10430 moveto
+7920 10406 lineto
+7909 10394 lineto
+7885 10394 lineto
+7873 10406 lineto
+7873 10430 lineto
+7885 10442 lineto
+7897 10442 lineto
+7897 10394 lineto
+ stroke
+ newpath
+7885 10502 moveto
+7885 10502 lineto
+ stroke
+ newpath
+7920 10502 moveto
+7920 10502 lineto
+ stroke
+ newpath
+7909 10982 moveto
+7885 10982 lineto
+7873 10994 lineto
+7873 11018 lineto
+7885 11030 lineto
+7909 11030 lineto
+7920 11018 lineto
+7920 10994 lineto
+7909 10982 lineto
+ stroke
+ newpath
+7885 11066 moveto
+7885 11114 lineto
+ stroke
+ newpath
+7920 11090 moveto
+7862 11090 lineto
+7850 11102 lineto
+7850 11114 lineto
+ stroke
+ newpath
+7885 11174 moveto
+7885 11174 lineto
+ stroke
+ newpath
+7920 11174 moveto
+7920 11174 lineto
+ stroke
+ newpath
+7262 8030 moveto
+7250 8018 lineto
+7250 7994 lineto
+7262 7982 lineto
+7309 7982 lineto
+7320 7994 lineto
+7320 8018 lineto
+7309 8030 lineto
+ stroke
+ newpath
+7309 8066 moveto
+7285 8066 lineto
+7273 8078 lineto
+7273 8102 lineto
+7285 8114 lineto
+7309 8114 lineto
+7320 8102 lineto
+7320 8078 lineto
+7309 8066 lineto
+ stroke
+ newpath
+7320 8150 moveto
+7273 8150 lineto
+ stroke
+ newpath
+7285 8150 moveto
+7273 8162 lineto
+7285 8174 lineto
+7320 8174 lineto
+ stroke
+ newpath
+7285 8174 moveto
+7273 8186 lineto
+7285 8198 lineto
+7320 8198 lineto
+ stroke
+ newpath
+7343 8234 moveto
+7273 8234 lineto
+7273 8270 lineto
+7285 8282 lineto
+7309 8282 lineto
+7320 8270 lineto
+7320 8234 lineto
+ stroke
+ newpath
+7273 8330 moveto
+7273 8354 lineto
+7285 8366 lineto
+7320 8366 lineto
+7320 8330 lineto
+7309 8318 lineto
+7297 8330 lineto
+7297 8366 lineto
+ stroke
+ newpath
+7320 8402 moveto
+7273 8402 lineto
+7273 8438 lineto
+7285 8450 lineto
+7320 8450 lineto
+ stroke
+ newpath
+7273 8486 moveto
+7309 8486 lineto
+7320 8498 lineto
+7320 8534 lineto
+ stroke
+ newpath
+7273 8534 moveto
+7331 8534 lineto
+7343 8522 lineto
+7343 8498 lineto
+ stroke
+ newpath
+7285 8594 moveto
+7285 8594 lineto
+ stroke
+ newpath
+7320 8594 moveto
+7320 8594 lineto
+ stroke
+ newpath
+7622 8030 moveto
+7610 8018 lineto
+7610 7994 lineto
+7622 7982 lineto
+7669 7982 lineto
+7680 7994 lineto
+7680 8018 lineto
+7669 8030 lineto
+ stroke
+ newpath
+7669 8066 moveto
+7645 8066 lineto
+7633 8078 lineto
+7633 8102 lineto
+7645 8114 lineto
+7669 8114 lineto
+7680 8102 lineto
+7680 8078 lineto
+7669 8066 lineto
+ stroke
+ newpath
+7633 8150 moveto
+7669 8150 lineto
+7680 8162 lineto
+7680 8186 lineto
+7669 8198 lineto
+7633 8198 lineto
+ stroke
+ newpath
+7680 8234 moveto
+7633 8234 lineto
+7633 8270 lineto
+7645 8282 lineto
+7680 8282 lineto
+ stroke
+ newpath
+7633 8318 moveto
+7633 8366 lineto
+ stroke
+ newpath
+7610 8342 moveto
+7669 8342 lineto
+7680 8354 lineto
+7680 8366 lineto
+ stroke
+ newpath
+7680 8402 moveto
+7633 8402 lineto
+7633 8438 lineto
+7645 8450 lineto
+ stroke
+ newpath
+7633 8486 moveto
+7669 8486 lineto
+7680 8498 lineto
+7680 8534 lineto
+ stroke
+ newpath
+7633 8534 moveto
+7691 8534 lineto
+7703 8522 lineto
+7703 8498 lineto
+ stroke
+ newpath
+7645 8594 moveto
+7645 8594 lineto
+ stroke
+ newpath
+7680 8594 moveto
+7680 8594 lineto
+ stroke
+ newpath
+7382 8702 moveto
+7370 8714 lineto
+7370 8738 lineto
+7382 8750 lineto
+7393 8750 lineto
+7417 8726 lineto
+ stroke
+ newpath
+7440 8726 moveto
+7440 8726 lineto
+ stroke
+ newpath
+7502 8702 moveto
+7490 8714 lineto
+7490 8738 lineto
+7502 8750 lineto
+7513 8750 lineto
+7537 8726 lineto
+ stroke
+ newpath
+7560 8726 moveto
+7560 8726 lineto
+ stroke
+ newpath
+7622 8702 moveto
+7610 8714 lineto
+7610 8738 lineto
+7622 8750 lineto
+7633 8750 lineto
+7657 8726 lineto
+ stroke
+ newpath
+7680 8726 moveto
+7680 8726 lineto
+ stroke
+ newpath
+7502 8030 moveto
+7490 8018 lineto
+7490 7994 lineto
+7502 7982 lineto
+7549 7982 lineto
+7560 7994 lineto
+7560 8018 lineto
+7549 8030 lineto
+ stroke
+ newpath
+7560 8090 moveto
+7513 8090 lineto
+ stroke
+ newpath
+7490 8090 moveto
+7490 8090 lineto
+ stroke
+ newpath
+7513 8150 moveto
+7513 8198 lineto
+ stroke
+ newpath
+7490 8174 moveto
+7549 8174 lineto
+7560 8186 lineto
+7560 8198 lineto
+ stroke
+ newpath
+7513 8234 moveto
+7549 8234 lineto
+7560 8246 lineto
+7560 8282 lineto
+ stroke
+ newpath
+7513 8282 moveto
+7571 8282 lineto
+7583 8270 lineto
+7583 8246 lineto
+ stroke
+ newpath
+7080 7982 moveto
+7010 7982 lineto
+7010 8018 lineto
+7022 8030 lineto
+7033 8030 lineto
+7045 8018 lineto
+7045 7982 lineto
+ stroke
+ newpath
+7080 8066 moveto
+7033 8066 lineto
+7033 8102 lineto
+7045 8114 lineto
+ stroke
+ newpath
+7069 8150 moveto
+7045 8150 lineto
+7033 8162 lineto
+7033 8186 lineto
+7045 8198 lineto
+7069 8198 lineto
+7080 8186 lineto
+7080 8162 lineto
+7069 8150 lineto
+ stroke
+ newpath
+7091 8234 moveto
+7103 8246 lineto
+7103 8270 lineto
+7091 8282 lineto
+7033 8282 lineto
+ stroke
+ newpath
+7010 8282 moveto
+7010 8282 lineto
+ stroke
+ newpath
+7080 8354 moveto
+7080 8330 lineto
+7069 8318 lineto
+7045 8318 lineto
+7033 8330 lineto
+7033 8354 lineto
+7045 8366 lineto
+7057 8366 lineto
+7057 8318 lineto
+ stroke
+ newpath
+7033 8438 moveto
+7033 8414 lineto
+7045 8402 lineto
+7069 8402 lineto
+7080 8414 lineto
+7080 8438 lineto
+ stroke
+ newpath
+7033 8486 moveto
+7033 8534 lineto
+ stroke
+ newpath
+7010 8510 moveto
+7069 8510 lineto
+7080 8522 lineto
+7080 8534 lineto
+ stroke
+ newpath
+7045 8594 moveto
+7045 8594 lineto
+ stroke
+ newpath
+7080 8594 moveto
+7080 8594 lineto
+ stroke
+ newpath
+6840 7982 moveto
+6770 7982 lineto
+6770 8018 lineto
+6782 8030 lineto
+6793 8030 lineto
+6805 8018 lineto
+6805 7982 lineto
+ stroke
+ newpath
+6805 7994 moveto
+6840 8030 lineto
+ stroke
+ newpath
+6840 8102 moveto
+6840 8078 lineto
+6829 8066 lineto
+6805 8066 lineto
+6793 8078 lineto
+6793 8102 lineto
+6805 8114 lineto
+6817 8114 lineto
+6817 8066 lineto
+ stroke
+ newpath
+6793 8150 moveto
+6817 8150 lineto
+6840 8174 lineto
+6817 8198 lineto
+6793 8198 lineto
+ stroke
+ newpath
+6805 8258 moveto
+6805 8258 lineto
+ stroke
+ newpath
+6840 8258 moveto
+6840 8258 lineto
+ stroke
+ newpath
+6840 8702 moveto
+6770 8702 lineto
+6770 8738 lineto
+6782 8750 lineto
+6829 8750 lineto
+6840 8738 lineto
+6840 8702 lineto
+ stroke
+ newpath
+6793 8798 moveto
+6793 8822 lineto
+6805 8834 lineto
+6840 8834 lineto
+6840 8798 lineto
+6829 8786 lineto
+6817 8798 lineto
+6817 8834 lineto
+ stroke
+ newpath
+6793 8870 moveto
+6793 8918 lineto
+ stroke
+ newpath
+6770 8894 moveto
+6829 8894 lineto
+6840 8906 lineto
+6840 8918 lineto
+ stroke
+ newpath
+6840 8990 moveto
+6840 8966 lineto
+6829 8954 lineto
+6805 8954 lineto
+6793 8966 lineto
+6793 8990 lineto
+6805 9002 lineto
+6817 9002 lineto
+6817 8954 lineto
+ stroke
+ newpath
+6805 9062 moveto
+6805 9062 lineto
+ stroke
+ newpath
+6840 9062 moveto
+6840 9062 lineto
+ stroke
+ newpath
+6840 10430 moveto
+6840 10382 lineto
+6770 10382 lineto
+6770 10430 lineto
+ stroke
+ newpath
+6805 10382 moveto
+6805 10418 lineto
+ stroke
+ newpath
+6840 10466 moveto
+6793 10466 lineto
+6793 10502 lineto
+6805 10514 lineto
+6840 10514 lineto
+ stroke
+ newpath
+6863 10562 moveto
+6863 10586 lineto
+6851 10598 lineto
+6805 10598 lineto
+6793 10586 lineto
+6793 10562 lineto
+6805 10550 lineto
+6829 10550 lineto
+6840 10562 lineto
+6840 10598 lineto
+ stroke
+ newpath
+6805 10658 moveto
+6805 10658 lineto
+ stroke
+ newpath
+6840 10658 moveto
+6840 10658 lineto
+ stroke
+ newpath
+7440 7982 moveto
+7382 7982 lineto
+7370 7994 lineto
+7370 8018 lineto
+7382 8030 lineto
+7440 8030 lineto
+ stroke
+ newpath
+7417 7982 moveto
+7417 8030 lineto
+ stroke
+ newpath
+7370 8114 moveto
+7440 8114 lineto
+7440 8078 lineto
+7429 8066 lineto
+7405 8066 lineto
+7393 8078 lineto
+7393 8114 lineto
+ stroke
+ newpath
+7370 8198 moveto
+7440 8198 lineto
+7440 8162 lineto
+7429 8150 lineto
+7405 8150 lineto
+7393 8162 lineto
+7393 8198 lineto
+ stroke
+ newpath
+7440 8234 moveto
+7393 8234 lineto
+7393 8270 lineto
+7405 8282 lineto
+ stroke
+ newpath
+7440 8354 moveto
+7440 8330 lineto
+7429 8318 lineto
+7405 8318 lineto
+7393 8330 lineto
+7393 8354 lineto
+7405 8366 lineto
+7417 8366 lineto
+7417 8318 lineto
+ stroke
+ newpath
+7440 8402 moveto
+7440 8438 lineto
+7429 8450 lineto
+7417 8438 lineto
+7417 8414 lineto
+7405 8402 lineto
+7393 8414 lineto
+7393 8450 lineto
+ stroke
+ newpath
+7440 8486 moveto
+7440 8522 lineto
+7429 8534 lineto
+7417 8522 lineto
+7417 8498 lineto
+7405 8486 lineto
+7393 8498 lineto
+7393 8534 lineto
+ stroke
+ newpath
+7405 8594 moveto
+7405 8594 lineto
+ stroke
+ newpath
+7440 8594 moveto
+7440 8594 lineto
+ stroke
+ newpath
+7862 9122 moveto
+7850 9134 lineto
+7850 9158 lineto
+7862 9170 lineto
+7873 9170 lineto
+7920 9122 lineto
+7920 9170 lineto
+ stroke
+ newpath
+7909 9206 moveto
+7862 9206 lineto
+7850 9218 lineto
+7850 9230 lineto
+7850 9242 lineto
+7862 9254 lineto
+7909 9206 lineto
+7920 9218 lineto
+7920 9242 lineto
+7909 9254 lineto
+7862 9254 lineto
+ stroke
+ newpath
+7873 9302 moveto
+7850 9326 lineto
+7920 9326 lineto
+ stroke
+ newpath
+7909 9374 moveto
+7897 9374 lineto
+7885 9386 lineto
+7873 9374 lineto
+7862 9374 lineto
+7850 9386 lineto
+7850 9410 lineto
+7862 9422 lineto
+7873 9422 lineto
+7885 9410 lineto
+7897 9422 lineto
+7909 9422 lineto
+7920 9410 lineto
+7920 9386 lineto
+7909 9374 lineto
+ stroke
+ newpath
+7885 9386 moveto
+7885 9410 lineto
+ stroke
+ newpath
+7897 9458 moveto
+7897 9506 lineto
+ stroke
+ newpath
+7873 9554 moveto
+7850 9578 lineto
+7920 9578 lineto
+ stroke
+ newpath
+7909 9626 moveto
+7862 9626 lineto
+7850 9638 lineto
+7850 9650 lineto
+7850 9662 lineto
+7862 9674 lineto
+7909 9626 lineto
+7920 9638 lineto
+7920 9662 lineto
+7909 9674 lineto
+7862 9674 lineto
+ stroke
+ newpath
+7897 9710 moveto
+7897 9758 lineto
+ stroke
+ newpath
+7873 9806 moveto
+7850 9830 lineto
+7920 9830 lineto
+ stroke
+ newpath
+7850 9926 moveto
+7850 9878 lineto
+7873 9878 lineto
+7873 9914 lineto
+7885 9926 lineto
+7909 9926 lineto
+7920 9914 lineto
+7920 9890 lineto
+7909 9878 lineto
+ stroke
+ newpath
+6782 9182 moveto
+6770 9194 lineto
+6770 9218 lineto
+6782 9230 lineto
+6793 9230 lineto
+6840 9182 lineto
+6840 9230 lineto
+ stroke
+ newpath
+6829 9266 moveto
+6782 9266 lineto
+6770 9278 lineto
+6770 9290 lineto
+6770 9302 lineto
+6782 9314 lineto
+6829 9266 lineto
+6840 9278 lineto
+6840 9302 lineto
+6829 9314 lineto
+6782 9314 lineto
+ stroke
+ newpath
+6793 9362 moveto
+6770 9386 lineto
+6840 9386 lineto
+ stroke
+ newpath
+6829 9434 moveto
+6817 9434 lineto
+6805 9446 lineto
+6793 9434 lineto
+6782 9434 lineto
+6770 9446 lineto
+6770 9470 lineto
+6782 9482 lineto
+6793 9482 lineto
+6805 9470 lineto
+6817 9482 lineto
+6829 9482 lineto
+6840 9470 lineto
+6840 9446 lineto
+6829 9434 lineto
+ stroke
+ newpath
+6805 9446 moveto
+6805 9470 lineto
+ stroke
+ newpath
+6817 9518 moveto
+6817 9566 lineto
+ stroke
+ newpath
+6793 9614 moveto
+6770 9638 lineto
+6840 9638 lineto
+ stroke
+ newpath
+6829 9686 moveto
+6782 9686 lineto
+6770 9698 lineto
+6770 9710 lineto
+6770 9722 lineto
+6782 9734 lineto
+6829 9686 lineto
+6840 9698 lineto
+6840 9722 lineto
+6829 9734 lineto
+6782 9734 lineto
+ stroke
+ newpath
+6817 9770 moveto
+6817 9818 lineto
+ stroke
+ newpath
+6793 9866 moveto
+6770 9890 lineto
+6840 9890 lineto
+ stroke
+ newpath
+6770 9986 moveto
+6770 9938 lineto
+6793 9938 lineto
+6793 9974 lineto
+6805 9986 lineto
+6829 9986 lineto
+6840 9974 lineto
+6840 9950 lineto
+6829 9938 lineto
+ stroke
+ newpath
+7022 8750 moveto
+7010 8738 lineto
+7010 8714 lineto
+7022 8702 lineto
+7069 8702 lineto
+7080 8714 lineto
+7080 8738 lineto
+7069 8750 lineto
+ stroke
+ newpath
+7080 8786 moveto
+7080 8822 lineto
+7069 8834 lineto
+7057 8834 lineto
+7045 8822 lineto
+7045 8798 lineto
+7033 8786 lineto
+7022 8786 lineto
+7010 8798 lineto
+7010 8834 lineto
+ stroke
+ newpath
+7010 8918 moveto
+7010 8882 lineto
+7022 8870 lineto
+7069 8870 lineto
+7080 8882 lineto
+7080 8918 lineto
+7045 8918 lineto
+7045 8906 lineto
+ stroke
+ newpath
+7010 8954 moveto
+7010 9002 lineto
+7022 9002 lineto
+7069 8954 lineto
+7080 8954 lineto
+7080 9002 lineto
+ stroke
+ newpath
+7080 9050 moveto
+7080 9074 lineto
+ stroke
+ newpath
+7080 9062 moveto
+7010 9062 lineto
+ stroke
+ newpath
+7010 9050 moveto
+7010 9074 lineto
+ stroke
+ newpath
+7080 9122 moveto
+7010 9122 lineto
+7010 9170 lineto
+ stroke
+ newpath
+7045 9122 moveto
+7045 9158 lineto
+ stroke
+ newpath
+7080 9206 moveto
+7080 9242 lineto
+7069 9254 lineto
+7057 9254 lineto
+7045 9242 lineto
+7045 9218 lineto
+7033 9206 lineto
+7022 9206 lineto
+7010 9218 lineto
+7010 9254 lineto
+ stroke
+ newpath
+7022 9290 moveto
+7010 9302 lineto
+7010 9326 lineto
+7022 9338 lineto
+7033 9338 lineto
+7080 9290 lineto
+7080 9338 lineto
+ stroke
+ newpath
+7080 9422 moveto
+7010 9422 lineto
+7057 9374 lineto
+7057 9434 lineto
+ stroke
+ newpath
+7873 10634 moveto
+7850 10658 lineto
+7920 10658 lineto
+ stroke
+ newpath
+7873 11294 moveto
+7850 11318 lineto
+7920 11318 lineto
+ stroke
+ newpath
+6829 8342 moveto
+6782 8342 lineto
+6770 8354 lineto
+6770 8366 lineto
+6770 8378 lineto
+6782 8390 lineto
+6829 8342 lineto
+6840 8354 lineto
+6840 8378 lineto
+6829 8390 lineto
+6782 8390 lineto
+ stroke
+ newpath
+6840 8450 moveto
+6840 8450 lineto
+ stroke
+ newpath
+6793 8522 moveto
+6770 8546 lineto
+6840 8546 lineto
+ stroke
+ newpath
+7262 8750 moveto
+7250 8738 lineto
+7250 8714 lineto
+7262 8702 lineto
+7309 8702 lineto
+7320 8714 lineto
+7320 8738 lineto
+7309 8750 lineto
+ stroke
+ newpath
+7320 8786 moveto
+7320 8822 lineto
+7309 8834 lineto
+7297 8834 lineto
+7285 8822 lineto
+7285 8798 lineto
+7273 8786 lineto
+7262 8786 lineto
+7250 8798 lineto
+7250 8834 lineto
+ stroke
+ newpath
+6782 10790 moveto
+6770 10778 lineto
+6770 10754 lineto
+6782 10742 lineto
+6829 10742 lineto
+6840 10754 lineto
+6840 10778 lineto
+6829 10790 lineto
+ stroke
+ newpath
+6840 10826 moveto
+6840 10862 lineto
+6829 10874 lineto
+6817 10874 lineto
+6805 10862 lineto
+6805 10838 lineto
+6793 10826 lineto
+6782 10826 lineto
+6770 10838 lineto
+6770 10874 lineto
+ stroke
+ newpath
+2671 4608 moveto
+2671 4848 lineto
+ stroke
+ newpath
+2911 4608 moveto
+2911 4848 lineto
+ stroke
+ newpath
+3151 4608 moveto
+3151 4848 lineto
+ stroke
+ newpath
+3391 4608 moveto
+3391 4848 lineto
+ stroke
+ newpath
+3631 4608 moveto
+3631 4848 lineto
+ stroke
+ newpath
+3871 4608 moveto
+3871 4848 lineto
+ stroke
+ newpath
+4111 4608 moveto
+4111 4848 lineto
+ stroke
+ newpath
+4351 4608 moveto
+4351 4848 lineto
+ stroke
+ newpath
+4591 4608 moveto
+4591 4848 lineto
+ stroke
+ newpath
+4831 4608 moveto
+4831 4848 lineto
+ stroke
+ newpath
+5071 4608 moveto
+5071 4848 lineto
+ stroke
+ newpath
+5311 4608 moveto
+5311 4848 lineto
+ stroke
+ newpath
+5311 5568 moveto
+5311 5868 lineto
+ stroke
+ newpath
+5071 5568 moveto
+5071 5868 lineto
+ stroke
+ newpath
+4831 5568 moveto
+4831 5868 lineto
+ stroke
+ newpath
+4591 5568 moveto
+4591 5868 lineto
+ stroke
+ newpath
+4351 5568 moveto
+4351 5868 lineto
+ stroke
+ newpath
+4111 5568 moveto
+4111 5868 lineto
+ stroke
+ newpath
+3871 5568 moveto
+3871 5868 lineto
+ stroke
+ newpath
+3631 5568 moveto
+3631 5868 lineto
+ stroke
+ newpath
+3391 5568 moveto
+3391 5868 lineto
+ stroke
+ newpath
+3151 5568 moveto
+3151 5868 lineto
+ stroke
+ newpath
+2911 5568 moveto
+2911 5868 lineto
+ stroke
+ newpath
+2671 5568 moveto
+2671 5868 lineto
+ stroke
+ newpath
+787 4428 moveto
+547 4428 lineto
+ stroke
+ newpath
+1147 4428 moveto
+907 4428 lineto
+ stroke
+ newpath
+787 4668 moveto
+547 4668 lineto
+ stroke
+ newpath
+1147 4668 moveto
+907 4668 lineto
+ stroke
+ newpath
+787 4908 moveto
+547 4908 lineto
+ stroke
+ newpath
+1147 4908 moveto
+907 4908 lineto
+ stroke
+ newpath
+787 5148 moveto
+547 5148 lineto
+ stroke
+ newpath
+1147 5148 moveto
+907 5148 lineto
+ stroke
+ newpath
+787 5388 moveto
+547 5388 lineto
+ stroke
+ newpath
+1147 5388 moveto
+907 5388 lineto
+ stroke
+ newpath
+787 5628 moveto
+547 5628 lineto
+ stroke
+ newpath
+1147 5628 moveto
+907 5628 lineto
+ stroke
+ newpath
+787 5868 moveto
+547 5868 lineto
+ stroke
+ newpath
+1147 5868 moveto
+907 5868 lineto
+ stroke
+ newpath
+787 6108 moveto
+547 6108 lineto
+ stroke
+ newpath
+1147 6108 moveto
+907 6108 lineto
+ stroke
+ newpath
+6883 4428 moveto
+6643 4428 lineto
+ stroke
+ newpath
+7243 4428 moveto
+7003 4428 lineto
+ stroke
+ newpath
+6883 4668 moveto
+6643 4668 lineto
+ stroke
+ newpath
+7243 4668 moveto
+7003 4668 lineto
+ stroke
+ newpath
+6883 4908 moveto
+6643 4908 lineto
+ stroke
+ newpath
+7243 4908 moveto
+7003 4908 lineto
+ stroke
+ newpath
+6883 5148 moveto
+6643 5148 lineto
+ stroke
+ newpath
+7243 5148 moveto
+7003 5148 lineto
+ stroke
+ newpath
+6883 5388 moveto
+6643 5388 lineto
+ stroke
+ newpath
+7243 5388 moveto
+7003 5388 lineto
+ stroke
+ newpath
+6883 5628 moveto
+6643 5628 lineto
+ stroke
+ newpath
+7243 5628 moveto
+7003 5628 lineto
+ stroke
+ newpath
+6883 5868 moveto
+6643 5868 lineto
+ stroke
+ newpath
+7243 5868 moveto
+7003 5868 lineto
+ stroke
+ newpath
+6883 6108 moveto
+6643 6108 lineto
+ stroke
+ newpath
+7243 6108 moveto
+7003 6108 lineto
+ stroke
+ newpath
+2671 4320 moveto
+2671 4368 lineto
+ stroke
+ newpath
+2671 4080 moveto
+2671 4128 lineto
+ stroke
+ newpath
+4831 6228 moveto
+4831 6276 lineto
+ stroke
+ newpath
+4831 5988 moveto
+4831 6036 lineto
+ stroke
+ newpath
+4591 6228 moveto
+4591 6276 lineto
+ stroke
+ newpath
+4591 5988 moveto
+4591 6036 lineto
+ stroke
+ newpath
+4351 6228 moveto
+4351 6276 lineto
+ stroke
+ newpath
+4351 5988 moveto
+4351 6036 lineto
+ stroke
+ newpath
+4111 6228 moveto
+4111 6276 lineto
+ stroke
+ newpath
+4111 5988 moveto
+4111 6036 lineto
+ stroke
+ newpath
+3871 6228 moveto
+3871 6276 lineto
+ stroke
+ newpath
+3871 5988 moveto
+3871 6036 lineto
+ stroke
+ newpath
+3631 6228 moveto
+3631 6276 lineto
+ stroke
+ newpath
+3631 5988 moveto
+3631 6036 lineto
+ stroke
+ newpath
+3391 6228 moveto
+3391 6276 lineto
+ stroke
+ newpath
+3391 5988 moveto
+3391 6036 lineto
+ stroke
+ newpath
+3151 6228 moveto
+3151 6276 lineto
+ stroke
+ newpath
+3151 5988 moveto
+3151 6036 lineto
+ stroke
+ newpath
+2911 6228 moveto
+2911 6276 lineto
+ stroke
+ newpath
+2911 5988 moveto
+2911 6036 lineto
+ stroke
+ newpath
+2179 4596 moveto
+1939 4596 lineto
+ stroke
+ newpath
+1699 4596 moveto
+1459 4596 lineto
+ stroke
+ newpath
+2179 5208 moveto
+1939 5208 lineto
+ stroke
+ newpath
+1699 5208 moveto
+1459 5208 lineto
+ stroke
+ newpath
+2179 5916 moveto
+1939 5916 lineto
+ stroke
+ newpath
+1699 5916 moveto
+1459 5916 lineto
+ stroke
+ newpath
+1675 4164 moveto
+1627 4164 lineto
+ stroke
+ newpath
+1915 4164 moveto
+1867 4164 lineto
+ stroke
+ newpath
+2503 6072 moveto
+2503 6276 lineto
+ stroke
+ newpath
+2503 5796 moveto
+2503 5969 lineto
+ stroke
+ newpath
+2610 4634 moveto
+2587 4658 lineto
+2657 4658 lineto
+ stroke
+ newpath
+2839 4622 moveto
+2827 4634 lineto
+2827 4658 lineto
+2839 4670 lineto
+2850 4670 lineto
+2897 4622 lineto
+2897 4670 lineto
+ stroke
+ newpath
+3079 4622 moveto
+3067 4634 lineto
+3067 4658 lineto
+3079 4670 lineto
+3090 4670 lineto
+3102 4658 lineto
+3114 4670 lineto
+3126 4670 lineto
+3137 4658 lineto
+3137 4634 lineto
+3126 4622 lineto
+ stroke
+ newpath
+3102 4646 moveto
+3102 4658 lineto
+ stroke
+ newpath
+3377 4670 moveto
+3307 4670 lineto
+3354 4622 lineto
+3354 4682 lineto
+ stroke
+ newpath
+3547 4670 moveto
+3547 4622 lineto
+3570 4622 lineto
+3570 4658 lineto
+3582 4670 lineto
+3606 4670 lineto
+3617 4658 lineto
+3617 4634 lineto
+3606 4622 lineto
+ stroke
+ newpath
+3787 4658 moveto
+3787 4634 lineto
+3799 4622 lineto
+3846 4622 lineto
+3857 4634 lineto
+3857 4658 lineto
+3846 4670 lineto
+3834 4670 lineto
+3822 4658 lineto
+3822 4622 lineto
+ stroke
+ newpath
+4027 4622 moveto
+4027 4682 lineto
+4039 4682 lineto
+4074 4646 lineto
+4097 4646 lineto
+ stroke
+ newpath
+4326 4622 moveto
+4314 4622 lineto
+4302 4634 lineto
+4290 4622 lineto
+4279 4622 lineto
+4267 4634 lineto
+4267 4658 lineto
+4279 4670 lineto
+4290 4670 lineto
+4302 4658 lineto
+4314 4670 lineto
+4326 4670 lineto
+4337 4658 lineto
+4337 4634 lineto
+4326 4622 lineto
+ stroke
+ newpath
+4302 4634 moveto
+4302 4658 lineto
+ stroke
+ newpath
+4577 4634 moveto
+4577 4658 lineto
+4566 4670 lineto
+4519 4670 lineto
+4507 4658 lineto
+4507 4634 lineto
+4519 4622 lineto
+4530 4622 lineto
+4542 4634 lineto
+4542 4670 lineto
+ stroke
+ newpath
+4770 4634 moveto
+4747 4658 lineto
+4817 4658 lineto
+ stroke
+ newpath
+4806 4706 moveto
+4759 4706 lineto
+4747 4718 lineto
+4747 4730 lineto
+4747 4742 lineto
+4759 4754 lineto
+4806 4706 lineto
+4817 4718 lineto
+4817 4742 lineto
+4806 4754 lineto
+4759 4754 lineto
+ stroke
+ newpath
+5010 4618 moveto
+4987 4642 lineto
+5057 4642 lineto
+ stroke
+ newpath
+5010 4702 moveto
+4987 4726 lineto
+5057 4726 lineto
+ stroke
+ newpath
+5250 4618 moveto
+5227 4642 lineto
+5297 4642 lineto
+ stroke
+ newpath
+5239 4690 moveto
+5227 4702 lineto
+5227 4726 lineto
+5239 4738 lineto
+5250 4738 lineto
+5297 4690 lineto
+5297 4738 lineto
+ stroke
+ newpath
+5250 5542 moveto
+5227 5566 lineto
+5297 5566 lineto
+ stroke
+ newpath
+5239 5614 moveto
+5227 5626 lineto
+5227 5650 lineto
+5239 5662 lineto
+5250 5662 lineto
+5262 5650 lineto
+5274 5662 lineto
+5286 5662 lineto
+5297 5650 lineto
+5297 5626 lineto
+5286 5614 lineto
+ stroke
+ newpath
+5262 5638 moveto
+5262 5650 lineto
+ stroke
+ newpath
+5010 5542 moveto
+4987 5566 lineto
+5057 5566 lineto
+ stroke
+ newpath
+5057 5662 moveto
+4987 5662 lineto
+5034 5614 lineto
+5034 5674 lineto
+ stroke
+ newpath
+4770 5542 moveto
+4747 5566 lineto
+4817 5566 lineto
+ stroke
+ newpath
+4747 5662 moveto
+4747 5614 lineto
+4770 5614 lineto
+4770 5650 lineto
+4782 5662 lineto
+4806 5662 lineto
+4817 5650 lineto
+4817 5626 lineto
+4806 5614 lineto
+ stroke
+ newpath
+4530 5542 moveto
+4507 5566 lineto
+4577 5566 lineto
+ stroke
+ newpath
+4507 5650 moveto
+4507 5626 lineto
+4519 5614 lineto
+4566 5614 lineto
+4577 5626 lineto
+4577 5650 lineto
+4566 5662 lineto
+4554 5662 lineto
+4542 5650 lineto
+4542 5614 lineto
+ stroke
+ newpath
+4290 5542 moveto
+4267 5566 lineto
+4337 5566 lineto
+ stroke
+ newpath
+4267 5614 moveto
+4267 5674 lineto
+4279 5674 lineto
+4314 5638 lineto
+4337 5638 lineto
+ stroke
+ newpath
+4050 5542 moveto
+4027 5566 lineto
+4097 5566 lineto
+ stroke
+ newpath
+4086 5614 moveto
+4074 5614 lineto
+4062 5626 lineto
+4050 5614 lineto
+4039 5614 lineto
+4027 5626 lineto
+4027 5650 lineto
+4039 5662 lineto
+4050 5662 lineto
+4062 5650 lineto
+4074 5662 lineto
+4086 5662 lineto
+4097 5650 lineto
+4097 5626 lineto
+4086 5614 lineto
+ stroke
+ newpath
+4062 5626 moveto
+4062 5650 lineto
+ stroke
+ newpath
+3810 5542 moveto
+3787 5566 lineto
+3857 5566 lineto
+ stroke
+ newpath
+3857 5626 moveto
+3857 5650 lineto
+3846 5662 lineto
+3799 5662 lineto
+3787 5650 lineto
+3787 5626 lineto
+3799 5614 lineto
+3810 5614 lineto
+3822 5626 lineto
+3822 5662 lineto
+ stroke
+ newpath
+3559 5530 moveto
+3547 5542 lineto
+3547 5566 lineto
+3559 5578 lineto
+3570 5578 lineto
+3617 5530 lineto
+3617 5578 lineto
+ stroke
+ newpath
+3606 5614 moveto
+3559 5614 lineto
+3547 5626 lineto
+3547 5638 lineto
+3547 5650 lineto
+3559 5662 lineto
+3606 5614 lineto
+3617 5626 lineto
+3617 5650 lineto
+3606 5662 lineto
+3559 5662 lineto
+ stroke
+ newpath
+3319 5686 moveto
+3307 5698 lineto
+3307 5722 lineto
+3319 5734 lineto
+3330 5734 lineto
+3377 5686 lineto
+3377 5734 lineto
+ stroke
+ newpath
+3330 5782 moveto
+3307 5806 lineto
+3377 5806 lineto
+ stroke
+ newpath
+3079 5686 moveto
+3067 5698 lineto
+3067 5722 lineto
+3079 5734 lineto
+3090 5734 lineto
+3137 5686 lineto
+3137 5734 lineto
+ stroke
+ newpath
+3079 5770 moveto
+3067 5782 lineto
+3067 5806 lineto
+3079 5818 lineto
+3090 5818 lineto
+3137 5770 lineto
+3137 5818 lineto
+ stroke
+ newpath
+2839 5686 moveto
+2827 5698 lineto
+2827 5722 lineto
+2839 5734 lineto
+2850 5734 lineto
+2897 5686 lineto
+2897 5734 lineto
+ stroke
+ newpath
+2839 5770 moveto
+2827 5782 lineto
+2827 5806 lineto
+2839 5818 lineto
+2850 5818 lineto
+2862 5806 lineto
+2874 5818 lineto
+2886 5818 lineto
+2897 5806 lineto
+2897 5782 lineto
+2886 5770 lineto
+ stroke
+ newpath
+2862 5794 moveto
+2862 5806 lineto
+ stroke
+ newpath
+2599 5686 moveto
+2587 5698 lineto
+2587 5722 lineto
+2599 5734 lineto
+2610 5734 lineto
+2657 5686 lineto
+2657 5734 lineto
+ stroke
+ newpath
+2657 5818 moveto
+2587 5818 lineto
+2634 5770 lineto
+2634 5830 lineto
+ stroke
+ newpath
+661 4454 moveto
+638 4478 lineto
+708 4478 lineto
+ stroke
+ newpath
+1010 4442 moveto
+998 4454 lineto
+998 4478 lineto
+1010 4490 lineto
+1021 4490 lineto
+1068 4442 lineto
+1068 4490 lineto
+ stroke
+ newpath
+650 4682 moveto
+638 4694 lineto
+638 4718 lineto
+650 4730 lineto
+661 4730 lineto
+673 4718 lineto
+685 4730 lineto
+697 4730 lineto
+708 4718 lineto
+708 4694 lineto
+697 4682 lineto
+ stroke
+ newpath
+673 4706 moveto
+673 4718 lineto
+ stroke
+ newpath
+1068 4730 moveto
+998 4730 lineto
+1045 4682 lineto
+1045 4742 lineto
+ stroke
+ newpath
+638 4970 moveto
+638 4922 lineto
+661 4922 lineto
+661 4958 lineto
+673 4970 lineto
+697 4970 lineto
+708 4958 lineto
+708 4934 lineto
+697 4922 lineto
+ stroke
+ newpath
+998 4958 moveto
+998 4934 lineto
+1010 4922 lineto
+1057 4922 lineto
+1068 4934 lineto
+1068 4958 lineto
+1057 4970 lineto
+1045 4970 lineto
+1033 4958 lineto
+1033 4922 lineto
+ stroke
+ newpath
+638 5162 moveto
+638 5222 lineto
+650 5222 lineto
+685 5186 lineto
+708 5186 lineto
+ stroke
+ newpath
+1057 5162 moveto
+1045 5162 lineto
+1033 5174 lineto
+1021 5162 lineto
+1010 5162 lineto
+998 5174 lineto
+998 5198 lineto
+1010 5210 lineto
+1021 5210 lineto
+1033 5198 lineto
+1045 5210 lineto
+1057 5210 lineto
+1068 5198 lineto
+1068 5174 lineto
+1057 5162 lineto
+ stroke
+ newpath
+1033 5174 moveto
+1033 5198 lineto
+ stroke
+ newpath
+708 5414 moveto
+708 5438 lineto
+697 5450 lineto
+650 5450 lineto
+638 5438 lineto
+638 5414 lineto
+650 5402 lineto
+661 5402 lineto
+673 5414 lineto
+673 5450 lineto
+ stroke
+ newpath
+1021 5414 moveto
+998 5438 lineto
+1068 5438 lineto
+ stroke
+ newpath
+1057 5486 moveto
+1010 5486 lineto
+998 5498 lineto
+998 5510 lineto
+998 5522 lineto
+1010 5534 lineto
+1057 5486 lineto
+1068 5498 lineto
+1068 5522 lineto
+1057 5534 lineto
+1010 5534 lineto
+ stroke
+ newpath
+661 5654 moveto
+638 5678 lineto
+708 5678 lineto
+ stroke
+ newpath
+661 5738 moveto
+638 5762 lineto
+708 5762 lineto
+ stroke
+ newpath
+1021 5654 moveto
+998 5678 lineto
+1068 5678 lineto
+ stroke
+ newpath
+1010 5726 moveto
+998 5738 lineto
+998 5762 lineto
+1010 5774 lineto
+1021 5774 lineto
+1068 5726 lineto
+1068 5774 lineto
+ stroke
+ newpath
+661 5894 moveto
+638 5918 lineto
+708 5918 lineto
+ stroke
+ newpath
+650 5966 moveto
+638 5978 lineto
+638 6002 lineto
+650 6014 lineto
+661 6014 lineto
+673 6002 lineto
+685 6014 lineto
+697 6014 lineto
+708 6002 lineto
+708 5978 lineto
+697 5966 lineto
+ stroke
+ newpath
+673 5990 moveto
+673 6002 lineto
+ stroke
+ newpath
+1021 5894 moveto
+998 5918 lineto
+1068 5918 lineto
+ stroke
+ newpath
+1068 6014 moveto
+998 6014 lineto
+1045 5966 lineto
+1045 6026 lineto
+ stroke
+ newpath
+661 6134 moveto
+638 6158 lineto
+708 6158 lineto
+ stroke
+ newpath
+638 6254 moveto
+638 6206 lineto
+661 6206 lineto
+661 6242 lineto
+673 6254 lineto
+697 6254 lineto
+708 6242 lineto
+708 6218 lineto
+697 6206 lineto
+ stroke
+ newpath
+1021 6134 moveto
+998 6158 lineto
+1068 6158 lineto
+ stroke
+ newpath
+998 6242 moveto
+998 6218 lineto
+1010 6206 lineto
+1057 6206 lineto
+1068 6218 lineto
+1068 6242 lineto
+1057 6254 lineto
+1045 6254 lineto
+1033 6242 lineto
+1033 6206 lineto
+ stroke
+ newpath
+6757 4454 moveto
+6734 4478 lineto
+6804 4478 lineto
+ stroke
+ newpath
+7106 4442 moveto
+7094 4454 lineto
+7094 4478 lineto
+7106 4490 lineto
+7117 4490 lineto
+7164 4442 lineto
+7164 4490 lineto
+ stroke
+ newpath
+6746 4682 moveto
+6734 4694 lineto
+6734 4718 lineto
+6746 4730 lineto
+6757 4730 lineto
+6769 4718 lineto
+6781 4730 lineto
+6793 4730 lineto
+6804 4718 lineto
+6804 4694 lineto
+6793 4682 lineto
+ stroke
+ newpath
+6769 4706 moveto
+6769 4718 lineto
+ stroke
+ newpath
+7164 4730 moveto
+7094 4730 lineto
+7141 4682 lineto
+7141 4742 lineto
+ stroke
+ newpath
+6734 4970 moveto
+6734 4922 lineto
+6757 4922 lineto
+6757 4958 lineto
+6769 4970 lineto
+6793 4970 lineto
+6804 4958 lineto
+6804 4934 lineto
+6793 4922 lineto
+ stroke
+ newpath
+7094 4958 moveto
+7094 4934 lineto
+7106 4922 lineto
+7153 4922 lineto
+7164 4934 lineto
+7164 4958 lineto
+7153 4970 lineto
+7141 4970 lineto
+7129 4958 lineto
+7129 4922 lineto
+ stroke
+ newpath
+6734 5162 moveto
+6734 5222 lineto
+6746 5222 lineto
+6781 5186 lineto
+6804 5186 lineto
+ stroke
+ newpath
+7153 5162 moveto
+7141 5162 lineto
+7129 5174 lineto
+7117 5162 lineto
+7106 5162 lineto
+7094 5174 lineto
+7094 5198 lineto
+7106 5210 lineto
+7117 5210 lineto
+7129 5198 lineto
+7141 5210 lineto
+7153 5210 lineto
+7164 5198 lineto
+7164 5174 lineto
+7153 5162 lineto
+ stroke
+ newpath
+7129 5174 moveto
+7129 5198 lineto
+ stroke
+ newpath
+6804 5414 moveto
+6804 5438 lineto
+6793 5450 lineto
+6746 5450 lineto
+6734 5438 lineto
+6734 5414 lineto
+6746 5402 lineto
+6757 5402 lineto
+6769 5414 lineto
+6769 5450 lineto
+ stroke
+ newpath
+7117 5414 moveto
+7094 5438 lineto
+7164 5438 lineto
+ stroke
+ newpath
+7153 5486 moveto
+7106 5486 lineto
+7094 5498 lineto
+7094 5510 lineto
+7094 5522 lineto
+7106 5534 lineto
+7153 5486 lineto
+7164 5498 lineto
+7164 5522 lineto
+7153 5534 lineto
+7106 5534 lineto
+ stroke
+ newpath
+6757 5654 moveto
+6734 5678 lineto
+6804 5678 lineto
+ stroke
+ newpath
+6757 5738 moveto
+6734 5762 lineto
+6804 5762 lineto
+ stroke
+ newpath
+7117 5654 moveto
+7094 5678 lineto
+7164 5678 lineto
+ stroke
+ newpath
+7106 5726 moveto
+7094 5738 lineto
+7094 5762 lineto
+7106 5774 lineto
+7117 5774 lineto
+7164 5726 lineto
+7164 5774 lineto
+ stroke
+ newpath
+6757 5894 moveto
+6734 5918 lineto
+6804 5918 lineto
+ stroke
+ newpath
+6746 5966 moveto
+6734 5978 lineto
+6734 6002 lineto
+6746 6014 lineto
+6757 6014 lineto
+6769 6002 lineto
+6781 6014 lineto
+6793 6014 lineto
+6804 6002 lineto
+6804 5978 lineto
+6793 5966 lineto
+ stroke
+ newpath
+6769 5990 moveto
+6769 6002 lineto
+ stroke
+ newpath
+7117 5894 moveto
+7094 5918 lineto
+7164 5918 lineto
+ stroke
+ newpath
+7164 6014 moveto
+7094 6014 lineto
+7141 5966 lineto
+7141 6026 lineto
+ stroke
+ newpath
+6757 6134 moveto
+6734 6158 lineto
+6804 6158 lineto
+ stroke
+ newpath
+6734 6254 moveto
+6734 6206 lineto
+6757 6206 lineto
+6757 6242 lineto
+6769 6254 lineto
+6793 6254 lineto
+6804 6242 lineto
+6804 6218 lineto
+6793 6206 lineto
+ stroke
+ newpath
+7117 6134 moveto
+7094 6158 lineto
+7164 6158 lineto
+ stroke
+ newpath
+7094 6242 moveto
+7094 6218 lineto
+7106 6206 lineto
+7153 6206 lineto
+7164 6218 lineto
+7164 6242 lineto
+7153 6254 lineto
+7141 6254 lineto
+7129 6242 lineto
+7129 6206 lineto
+ stroke
+ newpath
+2113 4510 moveto
+2090 4534 lineto
+2160 4534 lineto
+ stroke
+ newpath
+1502 4498 moveto
+1490 4510 lineto
+1490 4534 lineto
+1502 4546 lineto
+1513 4546 lineto
+1560 4498 lineto
+1560 4546 lineto
+ stroke
+ newpath
+2113 5122 moveto
+2090 5146 lineto
+2160 5146 lineto
+ stroke
+ newpath
+1502 5110 moveto
+1490 5122 lineto
+1490 5146 lineto
+1502 5158 lineto
+1513 5158 lineto
+1560 5110 lineto
+1560 5158 lineto
+ stroke
+ newpath
+2113 5830 moveto
+2090 5854 lineto
+2160 5854 lineto
+ stroke
+ newpath
+1502 5818 moveto
+1490 5830 lineto
+1490 5854 lineto
+1502 5866 lineto
+1513 5866 lineto
+1560 5818 lineto
+1560 5866 lineto
+ stroke
+ newpath
+1560 5866 moveto
+5 setlinewidth
+2589 6145 moveto
+2572 6128 lineto
+2572 6178 lineto
+ stroke
+ newpath
+2512 6128 moveto
+2529 6128 lineto
+2537 6136 lineto
+2537 6170 lineto
+2529 6178 lineto
+2512 6178 lineto
+2503 6170 lineto
+2503 6162 lineto
+2512 6153 lineto
+2537 6153 lineto
+ stroke
+ newpath
+2477 6128 moveto
+2477 6162 lineto
+2460 6178 lineto
+2443 6162 lineto
+2443 6128 lineto
+ stroke
+ newpath
+2443 6128 moveto
+7 setlinewidth
+5431 4848 moveto
+5431 5568 lineto
+2551 5568 lineto
+2551 4848 lineto
+5431 4848 lineto
+ stroke
+ newpath
+845 4308 moveto
+845 4370 lineto
+787 4370 lineto
+ stroke
+ newpath
+787 6228 moveto
+907 6228 lineto
+907 4308 lineto
+787 4308 lineto
+787 6228 lineto
+ stroke
+ newpath
+6941 4308 moveto
+6941 4370 lineto
+6883 4370 lineto
+ stroke
+ newpath
+6883 6228 moveto
+7003 6228 lineto
+7003 4308 lineto
+6883 4308 lineto
+6883 6228 lineto
+ stroke
+ newpath
+2635 4320 moveto
+2635 4128 lineto
+2707 4128 lineto
+2707 4320 lineto
+2635 4320 lineto
+ stroke
+ newpath
+4795 6228 moveto
+4795 6036 lineto
+4867 6036 lineto
+4867 6228 lineto
+4795 6228 lineto
+ stroke
+ newpath
+4555 6228 moveto
+4555 6036 lineto
+4627 6036 lineto
+4627 6228 lineto
+4555 6228 lineto
+ stroke
+ newpath
+4315 6228 moveto
+4315 6036 lineto
+4387 6036 lineto
+4387 6228 lineto
+4315 6228 lineto
+ stroke
+ newpath
+4075 6228 moveto
+4075 6036 lineto
+4147 6036 lineto
+4147 6228 lineto
+4075 6228 lineto
+ stroke
+ newpath
+3835 6228 moveto
+3835 6036 lineto
+3907 6036 lineto
+3907 6228 lineto
+3835 6228 lineto
+ stroke
+ newpath
+3595 6228 moveto
+3595 6036 lineto
+3667 6036 lineto
+3667 6228 lineto
+3595 6228 lineto
+ stroke
+ newpath
+3355 6228 moveto
+3355 6036 lineto
+3427 6036 lineto
+3427 6228 lineto
+3355 6228 lineto
+ stroke
+ newpath
+3115 6228 moveto
+3115 6036 lineto
+3187 6036 lineto
+3187 6228 lineto
+3115 6228 lineto
+ stroke
+ newpath
+2875 6228 moveto
+2875 6036 lineto
+2947 6036 lineto
+2947 6228 lineto
+2875 6228 lineto
+ stroke
+ newpath
+1795 4500 moveto
+1819 4476 lineto
+1843 4500 lineto
+ stroke
+ newpath
+1819 4524 moveto
+1819 4476 lineto
+ stroke
+ newpath
+1857 4500 moveto
+1867 4486 lineto
+1881 4476 lineto
+1905 4500 lineto
+ stroke
+ newpath
+1881 4476 moveto
+1881 4534 lineto
+ stroke
+ newpath
+1939 4716 moveto
+1939 4476 lineto
+ stroke
+ newpath
+1939 4596 moveto
+1699 4476 lineto
+1699 4716 lineto
+1939 4596 lineto
+ stroke
+ newpath
+1795 5112 moveto
+1819 5088 lineto
+1843 5112 lineto
+ stroke
+ newpath
+1819 5136 moveto
+1819 5088 lineto
+ stroke
+ newpath
+1857 5112 moveto
+1867 5098 lineto
+1881 5088 lineto
+1905 5112 lineto
+ stroke
+ newpath
+1881 5088 moveto
+1881 5146 lineto
+ stroke
+ newpath
+1939 5328 moveto
+1939 5088 lineto
+ stroke
+ newpath
+1939 5208 moveto
+1699 5088 lineto
+1699 5328 lineto
+1939 5208 lineto
+ stroke
+ newpath
+1795 5820 moveto
+1819 5796 lineto
+1843 5820 lineto
+ stroke
+ newpath
+1819 5844 moveto
+1819 5796 lineto
+ stroke
+ newpath
+1857 5820 moveto
+1867 5806 lineto
+1881 5796 lineto
+1905 5820 lineto
+ stroke
+ newpath
+1881 5796 moveto
+1881 5854 lineto
+ stroke
+ newpath
+1939 6036 moveto
+1939 5796 lineto
+ stroke
+ newpath
+1939 5916 moveto
+1699 5796 lineto
+1699 6036 lineto
+1939 5916 lineto
+ stroke
+ newpath
+1675 4128 moveto
+1867 4128 lineto
+1867 4200 lineto
+1675 4200 lineto
+1675 4128 lineto
+ stroke
+ newpath
+1675 4128 moveto
+25 setlinewidth
+2383 6066 moveto
+2383 6054 lineto
+2623 6054 lineto
+2623 6066 lineto
+2383 6066 lineto
+ stroke
+ newpath
+2383 5994 moveto
+2383 5982 lineto
+2623 5982 lineto
+2623 5994 lineto
+2383 5994 lineto
+ stroke
+ newpath
+2383 5994 moveto
+7 setlinewidth
+8131 132 moveto
+8131 12242 lineto
+132 12242 lineto
+132 132 lineto
+8131 132 lineto
+ stroke
+ newpath
+7173 48 moveto
+7115 48 lineto
+7103 60 lineto
+7103 84 lineto
+7115 96 lineto
+7173 96 lineto
+ stroke
+ newpath
+7150 48 moveto
+7150 96 lineto
+ stroke
+ newpath
+6132 132 moveto
+6132 12 lineto
+ stroke
+ newpath
+5174 48 moveto
+5104 48 lineto
+5104 84 lineto
+5116 96 lineto
+5127 96 lineto
+5139 84 lineto
+5139 48 lineto
+ stroke
+ newpath
+5139 84 moveto
+5151 96 lineto
+5163 96 lineto
+5174 84 lineto
+5174 48 lineto
+ stroke
+ newpath
+4133 132 moveto
+4133 12 lineto
+ stroke
+ newpath
+3117 96 moveto
+3105 84 lineto
+3105 60 lineto
+3117 48 lineto
+3164 48 lineto
+3175 60 lineto
+3175 84 lineto
+3164 96 lineto
+ stroke
+ newpath
+2133 132 moveto
+2133 12 lineto
+ stroke
+ newpath
+1176 48 moveto
+1106 48 lineto
+1106 84 lineto
+1118 96 lineto
+1165 96 lineto
+1176 84 lineto
+1176 48 lineto
+ stroke
+ newpath
+97 847 moveto
+85 847 lineto
+73 859 lineto
+61 847 lineto
+50 847 lineto
+38 859 lineto
+38 883 lineto
+50 895 lineto
+61 895 lineto
+73 883 lineto
+85 895 lineto
+97 895 lineto
+108 883 lineto
+108 859 lineto
+97 847 lineto
+ stroke
+ newpath
+73 859 moveto
+73 883 lineto
+ stroke
+ newpath
+132 1644 moveto
+12 1644 lineto
+ stroke
+ newpath
+38 2359 moveto
+38 2419 lineto
+50 2419 lineto
+85 2383 lineto
+108 2383 lineto
+ stroke
+ newpath
+132 3156 moveto
+12 3156 lineto
+ stroke
+ newpath
+38 3907 moveto
+38 3883 lineto
+50 3871 lineto
+97 3871 lineto
+108 3883 lineto
+108 3907 lineto
+97 3919 lineto
+85 3919 lineto
+73 3907 lineto
+73 3871 lineto
+ stroke
+ newpath
+132 4668 moveto
+12 4668 lineto
+ stroke
+ newpath
+38 5431 moveto
+38 5383 lineto
+61 5383 lineto
+61 5419 lineto
+73 5431 lineto
+97 5431 lineto
+108 5419 lineto
+108 5395 lineto
+97 5383 lineto
+ stroke
+ newpath
+132 6180 moveto
+12 6180 lineto
+ stroke
+ newpath
+108 6943 moveto
+38 6943 lineto
+85 6895 lineto
+85 6955 lineto
+ stroke
+ newpath
+132 7692 moveto
+12 7692 lineto
+ stroke
+ newpath
+50 8407 moveto
+38 8419 lineto
+38 8443 lineto
+50 8455 lineto
+61 8455 lineto
+73 8443 lineto
+85 8455 lineto
+97 8455 lineto
+108 8443 lineto
+108 8419 lineto
+97 8407 lineto
+ stroke
+ newpath
+73 8431 moveto
+73 8443 lineto
+ stroke
+ newpath
+132 9204 moveto
+12 9204 lineto
+ stroke
+ newpath
+50 9919 moveto
+38 9931 lineto
+38 9955 lineto
+50 9967 lineto
+61 9967 lineto
+108 9919 lineto
+108 9967 lineto
+ stroke
+ newpath
+132 10716 moveto
+12 10716 lineto
+ stroke
+ newpath
+61 11443 moveto
+38 11467 lineto
+108 11467 lineto
+ stroke
+ newpath
+7173 12266 moveto
+7115 12266 lineto
+7103 12278 lineto
+7103 12302 lineto
+7115 12314 lineto
+7173 12314 lineto
+ stroke
+ newpath
+7150 12266 moveto
+7150 12314 lineto
+ stroke
+ newpath
+5174 12266 moveto
+5104 12266 lineto
+5104 12302 lineto
+5116 12314 lineto
+5127 12314 lineto
+5139 12302 lineto
+5139 12266 lineto
+ stroke
+ newpath
+5139 12302 moveto
+5151 12314 lineto
+5163 12314 lineto
+5174 12302 lineto
+5174 12266 lineto
+ stroke
+ newpath
+6132 12242 moveto
+6132 12362 lineto
+ stroke
+ newpath
+3117 12314 moveto
+3105 12302 lineto
+3105 12278 lineto
+3117 12266 lineto
+3164 12266 lineto
+3175 12278 lineto
+3175 12302 lineto
+3164 12314 lineto
+ stroke
+ newpath
+4133 12242 moveto
+4133 12362 lineto
+ stroke
+ newpath
+1176 12266 moveto
+1106 12266 lineto
+1106 12302 lineto
+1118 12314 lineto
+1165 12314 lineto
+1176 12302 lineto
+1176 12266 lineto
+ stroke
+ newpath
+2133 12242 moveto
+2133 12362 lineto
+ stroke
+ newpath
+8168 11443 moveto
+8145 11467 lineto
+8215 11467 lineto
+ stroke
+ newpath
+8131 10716 moveto
+8251 10716 lineto
+ stroke
+ newpath
+8157 9919 moveto
+8145 9931 lineto
+8145 9955 lineto
+8157 9967 lineto
+8168 9967 lineto
+8215 9919 lineto
+8215 9967 lineto
+ stroke
+ newpath
+8131 9204 moveto
+8251 9204 lineto
+ stroke
+ newpath
+8157 8407 moveto
+8145 8419 lineto
+8145 8443 lineto
+8157 8455 lineto
+8168 8455 lineto
+8180 8443 lineto
+8192 8455 lineto
+8204 8455 lineto
+8215 8443 lineto
+8215 8419 lineto
+8204 8407 lineto
+ stroke
+ newpath
+8180 8431 moveto
+8180 8443 lineto
+ stroke
+ newpath
+8131 7692 moveto
+8251 7692 lineto
+ stroke
+ newpath
+8215 6943 moveto
+8145 6943 lineto
+8192 6895 lineto
+8192 6955 lineto
+ stroke
+ newpath
+8131 6180 moveto
+8251 6180 lineto
+ stroke
+ newpath
+8145 5431 moveto
+8145 5383 lineto
+8168 5383 lineto
+8168 5419 lineto
+8180 5431 lineto
+8204 5431 lineto
+8215 5419 lineto
+8215 5395 lineto
+8204 5383 lineto
+ stroke
+ newpath
+8131 4668 moveto
+8251 4668 lineto
+ stroke
+ newpath
+8145 3907 moveto
+8145 3883 lineto
+8157 3871 lineto
+8204 3871 lineto
+8215 3883 lineto
+8215 3907 lineto
+8204 3919 lineto
+8192 3919 lineto
+8180 3907 lineto
+8180 3871 lineto
+ stroke
+ newpath
+8131 3156 moveto
+8251 3156 lineto
+ stroke
+ newpath
+8145 2359 moveto
+8145 2419 lineto
+8157 2419 lineto
+8192 2383 lineto
+8215 2383 lineto
+ stroke
+ newpath
+8131 1644 moveto
+8251 1644 lineto
+ stroke
+ newpath
+8204 847 moveto
+8192 847 lineto
+8180 859 lineto
+8168 847 lineto
+8157 847 lineto
+8145 859 lineto
+8145 883 lineto
+8157 895 lineto
+8168 895 lineto
+8180 883 lineto
+8192 895 lineto
+8204 895 lineto
+8215 883 lineto
+8215 859 lineto
+8204 847 lineto
+ stroke
+ newpath
+8180 859 moveto
+8180 883 lineto
+ stroke
+ newpath
+5311 4608 moveto
+5311 4128 lineto
+7591 4128 lineto
+7591 6492 lineto
+331 6492 lineto
+331 4428 lineto
+547 4428 lineto
+ stroke
+ newpath
+7243 5628 moveto
+7519 5628 lineto
+7519 6384 lineto
+5071 6384 lineto
+5071 5868 lineto
+ stroke
+ newpath
+7243 4668 moveto
+7447 4668 lineto
+7447 6324 lineto
+5311 6324 lineto
+5311 5868 lineto
+ stroke
+ newpath
+3151 4608 moveto
+3151 3780 lineto
+7363 3780 lineto
+7363 5148 lineto
+7243 5148 lineto
+ stroke
+ newpath
+5071 4608 moveto
+5071 4212 lineto
+6163 4212 lineto
+6163 4428 lineto
+6643 4428 lineto
+ stroke
+ newpath
+3391 4608 moveto
+3391 3840 lineto
+6091 3840 lineto
+6091 4668 lineto
+6643 4668 lineto
+ stroke
+ newpath
+3631 4608 moveto
+3631 3888 lineto
+6031 3888 lineto
+6031 4908 lineto
+6643 4908 lineto
+ stroke
+ newpath
+3871 4608 moveto
+3871 3936 lineto
+5971 3936 lineto
+5971 5148 lineto
+6643 5148 lineto
+ stroke
+ newpath
+4111 4608 moveto
+4111 3984 lineto
+5911 3984 lineto
+5911 5388 lineto
+6643 5388 lineto
+ stroke
+ newpath
+4351 4608 moveto
+4351 4032 lineto
+5851 4032 lineto
+5851 5628 lineto
+6643 5628 lineto
+ stroke
+ newpath
+4591 4608 moveto
+4591 4080 lineto
+5791 4080 lineto
+5791 5868 lineto
+6643 5868 lineto
+ stroke
+ newpath
+4831 4608 moveto
+4831 4332 lineto
+5731 4332 lineto
+5731 6108 lineto
+6643 6108 lineto
+ stroke
+ newpath
+4831 5988 moveto
+4831 5868 lineto
+ stroke
+ newpath
+4831 6492 moveto
+4831 6276 lineto
+ stroke
+ newpath
+4591 6492 moveto
+4591 6276 lineto
+ stroke
+ newpath
+4591 5988 moveto
+4591 5868 lineto
+ stroke
+ newpath
+4351 5988 moveto
+4351 5868 lineto
+ stroke
+ newpath
+4351 6492 moveto
+4351 6276 lineto
+ stroke
+ newpath
+4111 6492 moveto
+4111 6276 lineto
+ stroke
+ newpath
+4111 5988 moveto
+4111 5868 lineto
+ stroke
+ newpath
+3871 5988 moveto
+3871 5868 lineto
+ stroke
+ newpath
+3871 6492 moveto
+3871 6276 lineto
+ stroke
+ newpath
+3631 6492 moveto
+3631 6276 lineto
+ stroke
+ newpath
+3631 5988 moveto
+3631 5868 lineto
+ stroke
+ newpath
+3391 5988 moveto
+3391 5868 lineto
+ stroke
+ newpath
+3391 6492 moveto
+3391 6276 lineto
+ stroke
+ newpath
+3151 6492 moveto
+3151 6276 lineto
+ stroke
+ newpath
+3151 5988 moveto
+3151 5868 lineto
+ stroke
+ newpath
+2911 4608 moveto
+2911 3828 lineto
+1219 3828 lineto
+1219 4668 lineto
+1147 4668 lineto
+ stroke
+ newpath
+2911 5988 moveto
+2911 5868 lineto
+ stroke
+ newpath
+2911 6492 moveto
+2911 6276 lineto
+ stroke
+ newpath
+2671 5868 moveto
+2671 6360 lineto
+1243 6360 lineto
+1243 5544 lineto
+ stroke
+ newpath
+2671 4608 moveto
+2671 4368 lineto
+ stroke
+ newpath
+2671 4080 moveto
+2671 3960 lineto
+1339 3960 lineto
+1339 6492 lineto
+ stroke
+ newpath
+2503 5796 moveto
+2503 5700 lineto
+2275 5700 lineto
+ stroke
+ newpath
+2503 6360 moveto
+2503 6276 lineto
+ stroke
+ newpath
+2275 6492 moveto
+2275 4596 lineto
+2179 4596 lineto
+ stroke
+ newpath
+1147 5388 moveto
+1279 5388 lineto
+1279 5052 lineto
+2227 5052 lineto
+2227 5208 lineto
+2179 5208 lineto
+ stroke
+ newpath
+2047 3828 moveto
+2047 4164 lineto
+1915 4164 lineto
+ stroke
+ newpath
+1627 4164 moveto
+1411 4164 lineto
+1411 4596 lineto
+1459 4596 lineto
+ stroke
+ newpath
+1459 5208 moveto
+1411 5208 lineto
+1411 5544 lineto
+475 5544 lineto
+475 5628 lineto
+547 5628 lineto
+ stroke
+ newpath
+1459 5916 moveto
+1399 5916 lineto
+1399 6600 lineto
+259 6600 lineto
+259 5376 lineto
+547 5376 lineto
+547 5388 lineto
+ stroke
+ newpath
+1219 4596 moveto
+475 4596 lineto
+475 4668 lineto
+547 4668 lineto
+ stroke
+ newpath
+1147 4428 moveto
+1339 4428 lineto
+ stroke
+ newpath
+7243 4428 moveto
+7591 4428 lineto
+ stroke
+ newpath
+7243 4908 moveto
+7591 4908 lineto
+ stroke
+ newpath
+7243 5388 moveto
+7591 5388 lineto
+ stroke
+ newpath
+1147 5628 moveto
+1243 5628 lineto
+ stroke
+ newpath
+2179 5916 moveto
+2275 5916 lineto
+ stroke
+ newpath
+331 6108 moveto
+547 6108 lineto
+ stroke
+ newpath
+1147 6108 moveto
+1339 6108 lineto
+ stroke
+ newpath
+7243 6108 moveto
+7591 6108 lineto
+ stroke
+ newpath
+5534 4867 moveto
+5522 4879 lineto
+5522 4903 lineto
+5534 4915 lineto
+5545 4915 lineto
+5569 4891 lineto
+ stroke
+ newpath
+5592 4891 moveto
+5592 4891 lineto
+ stroke
+ newpath
+2462 4980 moveto
+2462 5028 lineto
+2474 5028 lineto
+2521 4980 lineto
+2532 4980 lineto
+2532 5028 lineto
+ stroke
+ newpath
+2532 5076 moveto
+2532 5100 lineto
+ stroke
+ newpath
+2532 5088 moveto
+2462 5088 lineto
+ stroke
+ newpath
+2462 5076 moveto
+2462 5100 lineto
+ stroke
+ newpath
+2532 5148 moveto
+2462 5148 lineto
+2462 5196 lineto
+ stroke
+ newpath
+2497 5148 moveto
+2497 5184 lineto
+ stroke
+ newpath
+2485 5244 moveto
+2462 5268 lineto
+2532 5268 lineto
+ stroke
+ newpath
+1010 4207 moveto
+998 4219 lineto
+998 4243 lineto
+1010 4255 lineto
+1021 4255 lineto
+1045 4231 lineto
+ stroke
+ newpath
+1068 4231 moveto
+1068 4231 lineto
+ stroke
+ newpath
+590 4008 moveto
+578 3996 lineto
+578 3972 lineto
+590 3960 lineto
+637 3960 lineto
+648 3972 lineto
+648 3996 lineto
+637 4008 lineto
+ stroke
+ newpath
+637 4044 moveto
+590 4044 lineto
+578 4056 lineto
+578 4080 lineto
+590 4092 lineto
+637 4092 lineto
+648 4080 lineto
+648 4056 lineto
+637 4044 lineto
+ stroke
+ newpath
+648 4128 moveto
+578 4128 lineto
+648 4176 lineto
+578 4176 lineto
+ stroke
+ newpath
+590 4212 moveto
+578 4224 lineto
+578 4248 lineto
+590 4260 lineto
+601 4260 lineto
+648 4212 lineto
+648 4260 lineto
+ stroke
+ newpath
+7106 4207 moveto
+7094 4219 lineto
+7094 4243 lineto
+7106 4255 lineto
+7117 4255 lineto
+7141 4231 lineto
+ stroke
+ newpath
+7164 4231 moveto
+7164 4231 lineto
+ stroke
+ newpath
+6686 4008 moveto
+6674 3996 lineto
+6674 3972 lineto
+6686 3960 lineto
+6733 3960 lineto
+6744 3972 lineto
+6744 3996 lineto
+6733 4008 lineto
+ stroke
+ newpath
+6733 4044 moveto
+6686 4044 lineto
+6674 4056 lineto
+6674 4080 lineto
+6686 4092 lineto
+6733 4092 lineto
+6744 4080 lineto
+6744 4056 lineto
+6733 4044 lineto
+ stroke
+ newpath
+6744 4128 moveto
+6674 4128 lineto
+6744 4176 lineto
+6674 4176 lineto
+ stroke
+ newpath
+6686 4212 moveto
+6674 4224 lineto
+6674 4248 lineto
+6686 4260 lineto
+6697 4260 lineto
+6709 4248 lineto
+6721 4260 lineto
+6733 4260 lineto
+6744 4248 lineto
+6744 4224 lineto
+6733 4212 lineto
+ stroke
+ newpath
+6709 4236 moveto
+6709 4248 lineto
+ stroke
+ newpath
+6709 4248 moveto
+5 setlinewidth
+2599 4090 moveto
+2557 4090 lineto
+2557 4111 lineto
+2564 4118 lineto
+2571 4118 lineto
+2578 4111 lineto
+2578 4090 lineto
+ stroke
+ newpath
+2578 4097 moveto
+2599 4118 lineto
+ stroke
+ newpath
+2571 4147 moveto
+2557 4161 lineto
+2599 4161 lineto
+ stroke
+ newpath
+2592 4190 moveto
+2564 4190 lineto
+2557 4197 lineto
+2557 4204 lineto
+2557 4211 lineto
+2564 4218 lineto
+2592 4190 lineto
+2599 4197 lineto
+2599 4211 lineto
+2592 4218 lineto
+2564 4218 lineto
+ stroke
+ newpath
+2695 4166 moveto
+2653 4166 lineto
+2681 4138 lineto
+2681 4173 lineto
+ stroke
+ newpath
+2695 4188 moveto
+2653 4188 lineto
+ stroke
+ newpath
+2674 4188 moveto
+2674 4195 lineto
+ stroke
+ newpath
+2653 4216 moveto
+2674 4195 lineto
+2695 4216 lineto
+ stroke
+ newpath
+2653 4238 moveto
+2653 4273 lineto
+2660 4273 lineto
+2681 4252 lineto
+2695 4252 lineto
+ stroke
+ newpath
+4759 5998 moveto
+4717 5998 lineto
+4717 6019 lineto
+4724 6026 lineto
+4731 6026 lineto
+4738 6019 lineto
+4738 5998 lineto
+ stroke
+ newpath
+4738 6005 moveto
+4759 6026 lineto
+ stroke
+ newpath
+4731 6055 moveto
+4717 6069 lineto
+4759 6069 lineto
+ stroke
+ newpath
+4731 6105 moveto
+4717 6119 lineto
+4759 6119 lineto
+ stroke
+ newpath
+4855 6074 moveto
+4813 6074 lineto
+4841 6046 lineto
+4841 6081 lineto
+ stroke
+ newpath
+4855 6096 moveto
+4813 6096 lineto
+ stroke
+ newpath
+4834 6096 moveto
+4834 6103 lineto
+ stroke
+ newpath
+4813 6124 moveto
+4834 6103 lineto
+4855 6124 lineto
+ stroke
+ newpath
+4813 6146 moveto
+4813 6181 lineto
+4820 6181 lineto
+4841 6160 lineto
+4855 6160 lineto
+ stroke
+ newpath
+4519 5998 moveto
+4477 5998 lineto
+4477 6019 lineto
+4484 6026 lineto
+4491 6026 lineto
+4498 6019 lineto
+4498 5998 lineto
+ stroke
+ newpath
+4498 6005 moveto
+4519 6026 lineto
+ stroke
+ newpath
+4491 6055 moveto
+4477 6069 lineto
+4519 6069 lineto
+ stroke
+ newpath
+4484 6098 moveto
+4477 6105 lineto
+4477 6119 lineto
+4484 6126 lineto
+4491 6126 lineto
+4519 6098 lineto
+4519 6126 lineto
+ stroke
+ newpath
+4615 6074 moveto
+4573 6074 lineto
+4601 6046 lineto
+4601 6081 lineto
+ stroke
+ newpath
+4615 6096 moveto
+4573 6096 lineto
+ stroke
+ newpath
+4594 6096 moveto
+4594 6103 lineto
+ stroke
+ newpath
+4573 6124 moveto
+4594 6103 lineto
+4615 6124 lineto
+ stroke
+ newpath
+4573 6146 moveto
+4573 6181 lineto
+4580 6181 lineto
+4601 6160 lineto
+4615 6160 lineto
+ stroke
+ newpath
+4279 5998 moveto
+4237 5998 lineto
+4237 6019 lineto
+4244 6026 lineto
+4251 6026 lineto
+4258 6019 lineto
+4258 5998 lineto
+ stroke
+ newpath
+4258 6005 moveto
+4279 6026 lineto
+ stroke
+ newpath
+4251 6055 moveto
+4237 6069 lineto
+4279 6069 lineto
+ stroke
+ newpath
+4244 6098 moveto
+4237 6105 lineto
+4237 6119 lineto
+4244 6126 lineto
+4251 6126 lineto
+4258 6119 lineto
+4265 6126 lineto
+4272 6126 lineto
+4279 6119 lineto
+4279 6105 lineto
+4272 6098 lineto
+ stroke
+ newpath
+4258 6112 moveto
+4258 6119 lineto
+ stroke
+ newpath
+4375 6074 moveto
+4333 6074 lineto
+4361 6046 lineto
+4361 6081 lineto
+ stroke
+ newpath
+4375 6096 moveto
+4333 6096 lineto
+ stroke
+ newpath
+4354 6096 moveto
+4354 6103 lineto
+ stroke
+ newpath
+4333 6124 moveto
+4354 6103 lineto
+4375 6124 lineto
+ stroke
+ newpath
+4333 6146 moveto
+4333 6181 lineto
+4340 6181 lineto
+4361 6160 lineto
+4375 6160 lineto
+ stroke
+ newpath
+4039 5998 moveto
+3997 5998 lineto
+3997 6019 lineto
+4004 6026 lineto
+4011 6026 lineto
+4018 6019 lineto
+4018 5998 lineto
+ stroke
+ newpath
+4018 6005 moveto
+4039 6026 lineto
+ stroke
+ newpath
+4011 6055 moveto
+3997 6069 lineto
+4039 6069 lineto
+ stroke
+ newpath
+4039 6126 moveto
+3997 6126 lineto
+4025 6098 lineto
+4025 6133 lineto
+ stroke
+ newpath
+4135 6074 moveto
+4093 6074 lineto
+4121 6046 lineto
+4121 6081 lineto
+ stroke
+ newpath
+4135 6096 moveto
+4093 6096 lineto
+ stroke
+ newpath
+4114 6096 moveto
+4114 6103 lineto
+ stroke
+ newpath
+4093 6124 moveto
+4114 6103 lineto
+4135 6124 lineto
+ stroke
+ newpath
+4093 6146 moveto
+4093 6181 lineto
+4100 6181 lineto
+4121 6160 lineto
+4135 6160 lineto
+ stroke
+ newpath
+3799 5998 moveto
+3757 5998 lineto
+3757 6019 lineto
+3764 6026 lineto
+3771 6026 lineto
+3778 6019 lineto
+3778 5998 lineto
+ stroke
+ newpath
+3778 6005 moveto
+3799 6026 lineto
+ stroke
+ newpath
+3771 6055 moveto
+3757 6069 lineto
+3799 6069 lineto
+ stroke
+ newpath
+3757 6126 moveto
+3757 6098 lineto
+3771 6098 lineto
+3771 6119 lineto
+3778 6126 lineto
+3792 6126 lineto
+3799 6119 lineto
+3799 6105 lineto
+3792 6098 lineto
+ stroke
+ newpath
+3895 6074 moveto
+3853 6074 lineto
+3881 6046 lineto
+3881 6081 lineto
+ stroke
+ newpath
+3895 6096 moveto
+3853 6096 lineto
+ stroke
+ newpath
+3874 6096 moveto
+3874 6103 lineto
+ stroke
+ newpath
+3853 6124 moveto
+3874 6103 lineto
+3895 6124 lineto
+ stroke
+ newpath
+3853 6146 moveto
+3853 6181 lineto
+3860 6181 lineto
+3881 6160 lineto
+3895 6160 lineto
+ stroke
+ newpath
+3559 5998 moveto
+3517 5998 lineto
+3517 6019 lineto
+3524 6026 lineto
+3531 6026 lineto
+3538 6019 lineto
+3538 5998 lineto
+ stroke
+ newpath
+3538 6005 moveto
+3559 6026 lineto
+ stroke
+ newpath
+3531 6055 moveto
+3517 6069 lineto
+3559 6069 lineto
+ stroke
+ newpath
+3517 6119 moveto
+3517 6105 lineto
+3524 6098 lineto
+3552 6098 lineto
+3559 6105 lineto
+3559 6119 lineto
+3552 6126 lineto
+3545 6126 lineto
+3538 6119 lineto
+3538 6098 lineto
+ stroke
+ newpath
+3655 6074 moveto
+3613 6074 lineto
+3641 6046 lineto
+3641 6081 lineto
+ stroke
+ newpath
+3655 6096 moveto
+3613 6096 lineto
+ stroke
+ newpath
+3634 6096 moveto
+3634 6103 lineto
+ stroke
+ newpath
+3613 6124 moveto
+3634 6103 lineto
+3655 6124 lineto
+ stroke
+ newpath
+3613 6146 moveto
+3613 6181 lineto
+3620 6181 lineto
+3641 6160 lineto
+3655 6160 lineto
+ stroke
+ newpath
+3319 5998 moveto
+3277 5998 lineto
+3277 6019 lineto
+3284 6026 lineto
+3291 6026 lineto
+3298 6019 lineto
+3298 5998 lineto
+ stroke
+ newpath
+3298 6005 moveto
+3319 6026 lineto
+ stroke
+ newpath
+3291 6055 moveto
+3277 6069 lineto
+3319 6069 lineto
+ stroke
+ newpath
+3277 6098 moveto
+3277 6133 lineto
+3284 6133 lineto
+3305 6112 lineto
+3319 6112 lineto
+ stroke
+ newpath
+3415 6074 moveto
+3373 6074 lineto
+3401 6046 lineto
+3401 6081 lineto
+ stroke
+ newpath
+3415 6096 moveto
+3373 6096 lineto
+ stroke
+ newpath
+3394 6096 moveto
+3394 6103 lineto
+ stroke
+ newpath
+3373 6124 moveto
+3394 6103 lineto
+3415 6124 lineto
+ stroke
+ newpath
+3373 6146 moveto
+3373 6181 lineto
+3380 6181 lineto
+3401 6160 lineto
+3415 6160 lineto
+ stroke
+ newpath
+3079 5998 moveto
+3037 5998 lineto
+3037 6019 lineto
+3044 6026 lineto
+3051 6026 lineto
+3058 6019 lineto
+3058 5998 lineto
+ stroke
+ newpath
+3058 6005 moveto
+3079 6026 lineto
+ stroke
+ newpath
+3051 6055 moveto
+3037 6069 lineto
+3079 6069 lineto
+ stroke
+ newpath
+3072 6098 moveto
+3065 6098 lineto
+3058 6105 lineto
+3051 6098 lineto
+3044 6098 lineto
+3037 6105 lineto
+3037 6119 lineto
+3044 6126 lineto
+3051 6126 lineto
+3058 6119 lineto
+3065 6126 lineto
+3072 6126 lineto
+3079 6119 lineto
+3079 6105 lineto
+3072 6098 lineto
+ stroke
+ newpath
+3058 6105 moveto
+3058 6119 lineto
+ stroke
+ newpath
+3175 6074 moveto
+3133 6074 lineto
+3161 6046 lineto
+3161 6081 lineto
+ stroke
+ newpath
+3175 6096 moveto
+3133 6096 lineto
+ stroke
+ newpath
+3154 6096 moveto
+3154 6103 lineto
+ stroke
+ newpath
+3133 6124 moveto
+3154 6103 lineto
+3175 6124 lineto
+ stroke
+ newpath
+3133 6146 moveto
+3133 6181 lineto
+3140 6181 lineto
+3161 6160 lineto
+3175 6160 lineto
+ stroke
+ newpath
+2839 5998 moveto
+2797 5998 lineto
+2797 6019 lineto
+2804 6026 lineto
+2811 6026 lineto
+2818 6019 lineto
+2818 5998 lineto
+ stroke
+ newpath
+2818 6005 moveto
+2839 6026 lineto
+ stroke
+ newpath
+2811 6055 moveto
+2797 6069 lineto
+2839 6069 lineto
+ stroke
+ newpath
+2839 6105 moveto
+2839 6119 lineto
+2832 6126 lineto
+2804 6126 lineto
+2797 6119 lineto
+2797 6105 lineto
+2804 6098 lineto
+2811 6098 lineto
+2818 6105 lineto
+2818 6126 lineto
+ stroke
+ newpath
+2935 6074 moveto
+2893 6074 lineto
+2921 6046 lineto
+2921 6081 lineto
+ stroke
+ newpath
+2935 6096 moveto
+2893 6096 lineto
+ stroke
+ newpath
+2914 6096 moveto
+2914 6103 lineto
+ stroke
+ newpath
+2893 6124 moveto
+2914 6103 lineto
+2935 6124 lineto
+ stroke
+ newpath
+2893 6146 moveto
+2893 6181 lineto
+2900 6181 lineto
+2921 6160 lineto
+2935 6160 lineto
+ stroke
+ newpath
+2935 6160 moveto
+7 setlinewidth
+1718 4740 moveto
+1788 4740 lineto
+1788 4788 lineto
+ stroke
+ newpath
+1788 4872 moveto
+1788 4824 lineto
+1718 4824 lineto
+1718 4872 lineto
+ stroke
+ newpath
+1753 4824 moveto
+1753 4860 lineto
+ stroke
+ newpath
+1788 4908 moveto
+1718 4908 lineto
+1718 4944 lineto
+1730 4956 lineto
+1777 4956 lineto
+1788 4944 lineto
+1788 4908 lineto
+ stroke
+ newpath
+1788 5040 moveto
+1718 5040 lineto
+1765 4992 lineto
+1765 5052 lineto
+ stroke
+ newpath
+1862 4620 moveto
+1932 4620 lineto
+1932 4656 lineto
+1921 4668 lineto
+1897 4668 lineto
+1885 4656 lineto
+1885 4620 lineto
+ stroke
+ newpath
+1862 4704 moveto
+1874 4716 lineto
+1932 4716 lineto
+ stroke
+ newpath
+1885 4788 moveto
+1921 4788 lineto
+1932 4800 lineto
+1932 4824 lineto
+1921 4836 lineto
+1885 4836 lineto
+ stroke
+ newpath
+1932 4908 moveto
+1932 4884 lineto
+1921 4872 lineto
+1897 4872 lineto
+1885 4884 lineto
+1885 4908 lineto
+1897 4920 lineto
+1909 4920 lineto
+1909 4872 lineto
+ stroke
+ newpath
+1718 5352 moveto
+1788 5352 lineto
+1788 5400 lineto
+ stroke
+ newpath
+1788 5484 moveto
+1788 5436 lineto
+1718 5436 lineto
+1718 5484 lineto
+ stroke
+ newpath
+1753 5436 moveto
+1753 5472 lineto
+ stroke
+ newpath
+1788 5520 moveto
+1718 5520 lineto
+1718 5556 lineto
+1730 5568 lineto
+1777 5568 lineto
+1788 5556 lineto
+1788 5520 lineto
+ stroke
+ newpath
+1718 5652 moveto
+1718 5604 lineto
+1741 5604 lineto
+1741 5640 lineto
+1753 5652 lineto
+1777 5652 lineto
+1788 5640 lineto
+1788 5616 lineto
+1777 5604 lineto
+ stroke
+ newpath
+1885 5148 moveto
+1921 5148 lineto
+1932 5160 lineto
+1932 5196 lineto
+ stroke
+ newpath
+1885 5196 moveto
+1943 5196 lineto
+1955 5184 lineto
+1955 5160 lineto
+ stroke
+ newpath
+1932 5268 moveto
+1932 5244 lineto
+1921 5232 lineto
+1897 5232 lineto
+1885 5244 lineto
+1885 5268 lineto
+1897 5280 lineto
+1909 5280 lineto
+1909 5232 lineto
+ stroke
+ newpath
+1862 5316 moveto
+1874 5328 lineto
+1932 5328 lineto
+ stroke
+ newpath
+1862 5400 moveto
+1874 5412 lineto
+1932 5412 lineto
+ stroke
+ newpath
+1921 5484 moveto
+1897 5484 lineto
+1885 5496 lineto
+1885 5520 lineto
+1897 5532 lineto
+1921 5532 lineto
+1932 5520 lineto
+1932 5496 lineto
+1921 5484 lineto
+ stroke
+ newpath
+1885 5568 moveto
+1921 5568 lineto
+1932 5580 lineto
+1921 5592 lineto
+1932 5604 lineto
+1921 5616 lineto
+1885 5616 lineto
+ stroke
+ newpath
+1718 6060 moveto
+1788 6060 lineto
+1788 6108 lineto
+ stroke
+ newpath
+1788 6192 moveto
+1788 6144 lineto
+1718 6144 lineto
+1718 6192 lineto
+ stroke
+ newpath
+1753 6144 moveto
+1753 6180 lineto
+ stroke
+ newpath
+1788 6228 moveto
+1718 6228 lineto
+1718 6264 lineto
+1730 6276 lineto
+1777 6276 lineto
+1788 6264 lineto
+1788 6228 lineto
+ stroke
+ newpath
+1718 6348 moveto
+1718 6324 lineto
+1730 6312 lineto
+1777 6312 lineto
+1788 6324 lineto
+1788 6348 lineto
+1777 6360 lineto
+1765 6360 lineto
+1753 6348 lineto
+1753 6312 lineto
+ stroke
+ newpath
+1955 5911 moveto
+1955 5935 lineto
+1943 5947 lineto
+1897 5947 lineto
+1885 5935 lineto
+1885 5911 lineto
+1897 5899 lineto
+1921 5899 lineto
+1932 5911 lineto
+1932 5947 lineto
+ stroke
+ newpath
+1932 5983 moveto
+1885 5983 lineto
+1885 6019 lineto
+1897 6031 lineto
+ stroke
+ newpath
+1932 6103 moveto
+1932 6079 lineto
+1921 6067 lineto
+1897 6067 lineto
+1885 6079 lineto
+1885 6103 lineto
+1897 6115 lineto
+1909 6115 lineto
+1909 6067 lineto
+ stroke
+ newpath
+1932 6187 moveto
+1932 6163 lineto
+1921 6151 lineto
+1897 6151 lineto
+1885 6163 lineto
+1885 6187 lineto
+1897 6199 lineto
+1909 6199 lineto
+1909 6151 lineto
+ stroke
+ newpath
+1932 6235 moveto
+1885 6235 lineto
+1885 6271 lineto
+1897 6283 lineto
+1932 6283 lineto
+ stroke
+ newpath
+1932 6283 moveto
+5 setlinewidth
+1905 4092 moveto
+1905 4050 lineto
+1884 4050 lineto
+1877 4057 lineto
+1877 4064 lineto
+1884 4071 lineto
+1905 4071 lineto
+ stroke
+ newpath
+1898 4071 moveto
+1877 4092 lineto
+ stroke
+ newpath
+1855 4057 moveto
+1848 4050 lineto
+1834 4050 lineto
+1827 4057 lineto
+1827 4064 lineto
+1855 4092 lineto
+1827 4092 lineto
+ stroke
+ newpath
+1805 4085 moveto
+1805 4057 lineto
+1798 4050 lineto
+1791 4050 lineto
+1784 4050 lineto
+1777 4057 lineto
+1805 4085 lineto
+1798 4092 lineto
+1784 4092 lineto
+1777 4085 lineto
+1777 4057 lineto
+ stroke
+ newpath
+1850 4160 moveto
+1836 4146 lineto
+1836 4188 lineto
+ stroke
+ newpath
+1800 4188 moveto
+1786 4188 lineto
+1779 4181 lineto
+1779 4153 lineto
+1786 4146 lineto
+1800 4146 lineto
+1807 4153 lineto
+1807 4160 lineto
+1800 4167 lineto
+1779 4167 lineto
+ stroke
+ newpath
+1757 4188 moveto
+1757 4146 lineto
+ stroke
+ newpath
+1757 4167 moveto
+1750 4167 lineto
+ stroke
+ newpath
+1729 4146 moveto
+1750 4167 lineto
+1729 4188 lineto
+ stroke
+ newpath
+1729 4188 moveto
+7 setlinewidth
+2442 6554 moveto
+2419 6578 lineto
+2489 6578 lineto
+ stroke
+ newpath
+2478 6626 moveto
+2431 6626 lineto
+2419 6638 lineto
+2419 6650 lineto
+2419 6662 lineto
+2431 6674 lineto
+2478 6626 lineto
+2489 6638 lineto
+2489 6662 lineto
+2478 6674 lineto
+2431 6674 lineto
+ stroke
+ newpath
+2478 6710 moveto
+2431 6710 lineto
+2419 6722 lineto
+2419 6734 lineto
+2419 6746 lineto
+2431 6758 lineto
+2478 6710 lineto
+2489 6722 lineto
+2489 6746 lineto
+2478 6758 lineto
+2431 6758 lineto
+ stroke
+ newpath
+2489 6794 moveto
+2419 6794 lineto
+2489 6842 lineto
+2419 6842 lineto
+ stroke
+ newpath
+2347 6170 moveto
+2335 6158 lineto
+2335 6134 lineto
+2347 6122 lineto
+2394 6122 lineto
+2405 6134 lineto
+2405 6158 lineto
+2394 6170 lineto
+ stroke
+ newpath
+2347 6206 moveto
+2335 6218 lineto
+2335 6242 lineto
+2347 6254 lineto
+2358 6254 lineto
+2405 6206 lineto
+2405 6254 lineto
+ stroke
+ newpath
+2405 6254 moveto
+5 setlinewidth
+5026 5984 moveto
+5026 6001 lineto
+5034 6010 lineto
+5059 6010 lineto
+5059 5984 lineto
+5051 5976 lineto
+5043 5984 lineto
+5043 6010 lineto
+ stroke
+ newpath
+5026 6061 moveto
+5026 6044 lineto
+5034 6036 lineto
+5051 6036 lineto
+5059 6044 lineto
+5059 6061 lineto
+ stroke
+ newpath
+5009 6096 moveto
+5059 6096 lineto
+ stroke
+ newpath
+5026 6121 moveto
+5043 6104 lineto
+5043 6096 lineto
+ stroke
+ newpath
+5043 6104 moveto
+5059 6121 lineto
+ stroke
+ newpath
+5299 5916 moveto
+5299 5941 lineto
+5291 5950 lineto
+5283 5941 lineto
+5283 5924 lineto
+5274 5916 lineto
+5266 5924 lineto
+5266 5950 lineto
+ stroke
+ newpath
+5266 5976 moveto
+5266 6010 lineto
+ stroke
+ newpath
+5249 5993 moveto
+5291 5993 lineto
+5299 6001 lineto
+5299 6010 lineto
+ stroke
+ newpath
+5299 6036 moveto
+5266 6036 lineto
+5266 6061 lineto
+5274 6070 lineto
+ stroke
+ newpath
+5291 6096 moveto
+5274 6096 lineto
+5266 6104 lineto
+5266 6121 lineto
+5274 6130 lineto
+5291 6130 lineto
+5299 6121 lineto
+5299 6104 lineto
+5291 6096 lineto
+ stroke
+ newpath
+5249 6156 moveto
+5299 6156 lineto
+5299 6181 lineto
+5291 6190 lineto
+5274 6190 lineto
+5266 6181 lineto
+5266 6156 lineto
+ stroke
+ newpath
+5299 6241 moveto
+5299 6224 lineto
+5291 6216 lineto
+5274 6216 lineto
+5266 6224 lineto
+5266 6241 lineto
+5274 6250 lineto
+5283 6250 lineto
+5283 6216 lineto
+ stroke
+ newpath
+2866 4140 moveto
+2883 4140 lineto
+2899 4157 lineto
+2883 4174 lineto
+2866 4174 lineto
+ stroke
+ newpath
+2915 4200 moveto
+2866 4200 lineto
+2866 4225 lineto
+2874 4234 lineto
+2891 4234 lineto
+2899 4225 lineto
+2899 4200 lineto
+ stroke
+ newpath
+2915 4260 moveto
+2866 4260 lineto
+2866 4285 lineto
+2874 4294 lineto
+2891 4294 lineto
+2899 4285 lineto
+2899 4260 lineto
+ stroke
+ newpath
+3143 4140 moveto
+3094 4140 lineto
+3094 4165 lineto
+3102 4174 lineto
+3119 4174 lineto
+3127 4165 lineto
+3127 4140 lineto
+ stroke
+ newpath
+3127 4200 moveto
+3085 4242 lineto
+ stroke
+ newpath
+3094 4260 moveto
+3111 4260 lineto
+3127 4277 lineto
+3111 4294 lineto
+3094 4294 lineto
+ stroke
+ newpath
+3063 4260 moveto
+3063 4320 lineto
+ stroke
+ newpath
+3379 4140 moveto
+3346 4140 lineto
+3346 4165 lineto
+3354 4174 lineto
+ stroke
+ newpath
+3346 4208 moveto
+3346 4225 lineto
+3354 4234 lineto
+3379 4234 lineto
+3379 4208 lineto
+3371 4200 lineto
+3363 4208 lineto
+3363 4234 lineto
+ stroke
+ newpath
+3371 4260 moveto
+3337 4260 lineto
+3329 4268 lineto
+3329 4277 lineto
+3329 4285 lineto
+3337 4294 lineto
+3371 4260 lineto
+3379 4268 lineto
+3379 4285 lineto
+3371 4294 lineto
+3337 4294 lineto
+ stroke
+ newpath
+5009 4390 moveto
+5059 4390 lineto
+5059 4364 lineto
+5051 4356 lineto
+5034 4356 lineto
+5026 4364 lineto
+5026 4390 lineto
+ stroke
+ newpath
+5059 4433 moveto
+5026 4433 lineto
+ stroke
+ newpath
+5009 4433 moveto
+5009 4433 lineto
+ stroke
+ newpath
+5059 4476 moveto
+5026 4476 lineto
+5026 4501 lineto
+5034 4510 lineto
+5059 4510 lineto
+ stroke
+ newpath
+4786 4393 moveto
+4786 4376 lineto
+4794 4368 lineto
+4811 4368 lineto
+4819 4376 lineto
+4819 4393 lineto
+ stroke
+ newpath
+4769 4428 moveto
+4777 4436 lineto
+4819 4436 lineto
+ stroke
+ newpath
+4769 4488 moveto
+4819 4488 lineto
+ stroke
+ newpath
+4786 4513 moveto
+4803 4496 lineto
+4803 4488 lineto
+ stroke
+ newpath
+4803 4496 moveto
+4819 4513 lineto
+ stroke showpage 
+
+
+
+
+
+
+
+
+
+
+

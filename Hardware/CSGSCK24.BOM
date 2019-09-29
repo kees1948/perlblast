@@ -1,0 +1,27 @@
+
+               B I L L   O F   M A T E R I A L S
+
+Project name: H:\PK\CSGSCK24\SCH\CSGSCK24
+Time & date:  17:24  Sep. 29, 2019
+
+ #  Device              Value               Package type        Refdes
+-------------------------------------------------------------------------------
+
+  1 C0603X7R            100N                X7R0603             C2                                 
+  2 FEM20P              ?                   HDR2X8              CON2                               
+                                                                CON3                               
+  1 LED0603             blue                LED0603             LED4                               
+  1 LED0603             green               LED0603             LED6                               
+  1 LED0603             yellow              LED0603             LED5                               
+  1 RES0603             19K                 mct0603             R20                                
+ 10 RES0603             4K7                 mct0603             R10                                
+                                                                R11                                
+                                                                R12                                
+                                                                R13                                
+                                                                R14                                
+                                                                R15                                
+                                                                R16                                
+                                                                R17                                
+                                                                R18                                
+                                                                R19                                
+  1 ZIF24               ?                   ZIF24P              ZIF1                               
