@@ -1,0 +1,78 @@
+
+               B I L L   O F   M A T E R I A L S
+
+Project name: H:\PK\CSGBLAST\SCH\CSGBLAST
+Time & date:  17:35  Sep. 29, 2019
+
+ #  Device              Value               Package type        Refdes
+-------------------------------------------------------------------------------
+
+  3 74HC1G              74HC1G00            SOT23-5             U11                                
+                                                                U12                                
+                                                                U13                                
+  2 74HC1G              74HC1G32            SOT23-5             U6                                 
+                                                                U7                                 
+  2 74HC07              74HC07              SO14                U9                                 
+                                                                U10                                
+  1 74HC573                                 SOL20               U4                                 
+  1 74LS273                                 SOL20               U5                                 
+  1 AD7801              AD7801              SOIC20              U8                                 
+  1 BAXXXC              BAT54C              SOT23               D2                                 
+ 10 C0603X7R            100N                X7R0603             C1                                 
+                                                                C2                                 
+                                                                C3                                 
+                                                                C4                                 
+                                                                C5                                 
+                                                                C6                                 
+                                                                C7                                 
+                                                                C10                                
+                                                                C12                                
+                                                                C13                                
+  1 DELTA_25HM                              DB25B$              J1                                 
+  1 DIODE               1N4001              SMA                 D1                                 
+  2 FEM20P              ?                   SOCK2X8             CON2                               
+                                                                CON3                               
+  4 HOLE3                                   HOLE3               H1                                 
+                                                                H2                                 
+                                                                H3                                 
+                                                                H4                                 
+  1 L78L05              L78L05              SOT89               U1                                 
+  1 LED0603             green               LED0603             LED1                               
+  2 LT3080              LT3080              SOT223              U2                                 
+                                                                U3                                 
+  3 MFET.N              2N7002              SOT23_F             T1                                 
+                                                                T2                                 
+                                                                T3                                 
+  1 PWRCON              ?                   PWRCON              CON1                               
+  2 RES0603             10K                 mct0603             R24                                
+                                                                R25                                
+  4 RES0603             47K                 mct0603             R6                                 
+                                                                R7                                 
+                                                                R8                                 
+                                                                R21                                
+  1 RES0603             200K                mct0603             R4                                 
+  2 RES0603             300K                mct0603             R2                                 
+                                                                R26                                
+  1 RES0603             910K                mct0603             R1                                 
+  1 RES0603             2K2                 mct0603             R5                                 
+  1 RES0603             3K3                 mct0603             R20                                
+ 13 RES0603             4K7                 mct0603             R3                                 
+                                                                R9                                 
+                                                                R10                                
+                                                                R11                                
+                                                                R12                                
+                                                                R13                                
+                                                                R14                                
+                                                                R15                                
+                                                                R16                                
+                                                                R17                                
+                                                                R18                                
+                                                                R19                                
+                                                                R23                                
+  1 RES_1W              680R                $R2010              R22                                
+  2 SCHOTTKY            BAT54               SOT23               D6                                 
+                                                                D8                                 
+  3 TANTAAL             10U/35V             CAP_D               C8                                 
+                                                                C9                                 
+                                                                C11                                
+  1 TOGGLE              SWITCH              TOGGLE              SW1                                
